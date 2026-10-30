@@ -28,13 +28,14 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
 
-      - name: Configure Pages
-        id: pages
-        uses: actions/configure-pages@v6
-
+      # Cheap checks first: a broken commit never reaches Pages.
       - run: npm ci
       - run: npm run lint
       - run: npm test
+
+      - name: Configure Pages
+        id: pages
+        uses: actions/configure-pages@v6
 
       - name: Build
         run: npm run build
