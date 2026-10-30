@@ -46,9 +46,7 @@ export function FeedbackHost() {
               {dialog.message && <p className={styles.dialogMessage}>{dialog.message}</p>}
             </div>
             <div
-              className={`${styles.dialogActions} ${
-                platform === 'ios' && dialog.actions.length > 2 ? styles.dialogActionsStacked : ''
-              }`}
+              className={`${styles.dialogActions} ${dialog.actions.length > 2 ? styles.dialogActionsStacked : ''}`}
             >
               {dialog.actions.map((action) => (
                 <button

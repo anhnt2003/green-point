@@ -1,4 +1,4 @@
-import { ArrowLeft, ExternalLink, LogOut, Maximize, Minimize, RotateCcw, Smartphone, Store, User } from 'lucide-react'
+import { ArrowLeft, ExternalLink, LogOut, Maximize, Minimize, PanelTopClose, RotateCcw, Smartphone, Store, User } from 'lucide-react'
 import type { ReactNode } from 'react'
 import type { Platform, Role } from '@/shared/bridge'
 import { appUrl } from './device'
@@ -15,6 +15,7 @@ interface ToolbarProps {
   onLogout(): void
   onReset(): void
   onBack(): void
+  onHide(): void
 }
 
 function Segmented<T extends string>({
@@ -56,6 +57,10 @@ export function Toolbar(props: ToolbarProps) {
         <span>
           GreenPoint <em>Simulator</em>
         </span>
+        <button type="button" className={styles.hideButton} onClick={props.onHide} title="Ẩn menu, chỉ hiện máy ảo">
+          <PanelTopClose size={16} />
+          <span>Ẩn menu</span>
+        </button>
       </div>
 
       <Segmented

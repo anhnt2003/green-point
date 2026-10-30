@@ -1,4 +1,4 @@
-import { ChartColumn, ClipboardList, Package } from 'lucide-react'
+import { ChartColumn, Package } from 'lucide-react'
 import { Navigate, Outlet, createMemoryRouter, useRouteError, type RouteObject } from 'react-router-dom'
 import type { Role } from '@/app/domain/types'
 import type { RouteHandle } from '@/app/layout/BottomNav'
@@ -7,6 +7,8 @@ import { BusinessHomeScreen } from '@/app/screens/business/BusinessHomeScreen'
 import { BusinessProfileScreen } from '@/app/screens/business/BusinessProfileScreen'
 import { GreenCapitalScreen } from '@/app/screens/business/GreenCapitalScreen'
 import { ManageScreen } from '@/app/screens/business/ManageScreen'
+import { ReceiveScreen } from '@/app/screens/business/ReceiveScreen'
+import { ScanScreen } from '@/app/screens/business/ScanScreen'
 import { PlaceholderScreen } from '@/app/screens/business/PlaceholderScreen'
 import { HistoryScreen } from '@/app/screens/HistoryScreen'
 import { HomeScreen } from '@/app/screens/HomeScreen'
@@ -16,6 +18,7 @@ import { ProfileScreen } from '@/app/screens/ProfileScreen'
 import { RecycleConfirmScreen } from '@/app/screens/RecycleConfirmScreen'
 import { RecycleSelectScreen } from '@/app/screens/RecycleSelectScreen'
 import { RewardsScreen } from '@/app/screens/RewardsScreen'
+import { SortingGuideScreen } from '@/app/screens/SortingGuideScreen'
 import { WelcomeScreen } from '@/app/screens/WelcomeScreen'
 import { useCurrentUser } from '@/app/store/selectors'
 
@@ -74,6 +77,8 @@ export const routes: RouteObject[] = [
               // Sub-screens keep the tab highlighted as drawn in the mockup.
               { path: '/rewards', element: <RewardsScreen />, handle: tab('home') },
               { path: '/impact', element: <ImpactScreen />, handle: tab('profile') },
+              // F-04 belongs to GreenMap.
+              { path: '/guide', element: <SortingGuideScreen />, handle: tab('map') },
             ],
           },
           { path: '/recycle', element: <RecycleSelectScreen /> },
@@ -92,10 +97,12 @@ export const routes: RouteObject[] = [
               { path: 'capital', element: <GreenCapitalScreen />, handle: tab('finance') },
               { path: 'profile', element: <BusinessProfileScreen />, handle: tab('profile') },
               { path: 'inventory', element: <PlaceholderScreen title="Tồn kho" Icon={Package} />, handle: tab('manage') },
-              { path: 'orders', element: <PlaceholderScreen title="Đơn hàng" Icon={ClipboardList} />, handle: tab('manage') },
               { path: 'reports', element: <PlaceholderScreen title="Báo cáo" Icon={ChartColumn} />, handle: tab('manage') },
             ],
           },
+          // Staff receiving flow (F-07): full-screen, no bottom navigation.
+          { path: 'scan', element: <ScanScreen /> },
+          { path: 'receive/:code', element: <ReceiveScreen /> },
         ],
       },
       { path: '*', element: <Navigate to="/" replace /> },

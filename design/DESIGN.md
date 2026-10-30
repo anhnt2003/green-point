@@ -88,7 +88,7 @@ Nền gradient trắng → `primary-tint`. Từ trên xuống:
 
 ### 02 — Trang chủ · `screens/02-home.png` · nav: Trang chủ
 1. `AppHeader` biến thể Home
-2. "Xin chào, Lan Anh!" (`heading`) + "Cùng nhau vì một Việt Nam xanh hơn 🌿" (`caption`)
+2. "Xin chào, Tuấn Anh!" (`heading`) + "Cùng nhau vì một Việt Nam xanh hơn 🌿" (`caption`)
 3. `PointsCard`: "Tổng điểm hiện có" · "245 điểm" · nút "Đổi quà"
 4. 2 `StatCard` cạnh nhau: "Rác đã bàn giao — 8.5 kg" (icon chai) · "Số lần giao dịch — 6 lần" (icon tái chế)
 5. Section "Bạn muốn làm gì hôm nay?" + lưới 2x2 `ActionTile`:
@@ -171,7 +171,7 @@ Nền gradient trắng → `primary-tint`. Từ trên xuống:
 
 ```json
 {
-  "user": { "name": "Lan Anh", "pointBalance": 245, "totalWeightKg": 8.5, "transactionCount": 6 },
+  "user": { "name": "Tuấn Anh", "pointBalance": 245, "totalWeightKg": 8.5, "transactionCount": 6 },
   "wasteTypes": [
     { "code": "paper", "name": "Giấy, bìa carton", "pointsPerKg": 10 },
     { "code": "pet", "name": "Chai nhựa (PET)", "pointsPerKg": 15 },
@@ -206,3 +206,4 @@ Nền gradient trắng → `primary-tint`. Từ trên xuống:
 ```
 
 > Lưu ý: số dư 245 điểm không khớp tổng lịch sử (+160 / −300). Đây là dữ liệu mock, giữ nguyên để khớp hình; xem Q-07.
+> Tên người dùng mock đã đổi từ "Lan Anh" trong mockup gốc thành "Tuấn Anh".

@@ -5,6 +5,23 @@ export const WEIGHT_STEP = 0.5
 export const WEIGHT_MIN = 0
 export const WEIGHT_MAX = 50
 
+/** Electronic scale used by collection-point staff: 0.1 kg precision, 500 kg capacity. */
+export const SCALE_PRECISION = 0.1
+export const SCALE_MAX_KG = 500
+
+/**
+ * Parses the weight a staff member reads off the scale. Accepts "2.4" or "2,4";
+ * an empty field means 0 kg. Returns null for anything that is not a valid reading.
+ */
+export function parseScaleWeight(text: string): number | null {
+  const value = text.trim().replace(',', '.')
+  if (value === '') return 0
+  if (!/^\d+(\.\d+)?$/.test(value)) return null
+  const kg = Math.round(Number(value) / SCALE_PRECISION) * SCALE_PRECISION
+  const rounded = Math.round(kg * 10) / 10
+  return rounded > SCALE_MAX_KG ? null : rounded
+}
+
 export function clampWeight(kg: number): number {
   const stepped = Math.round(kg / WEIGHT_STEP) * WEIGHT_STEP
   return Math.min(WEIGHT_MAX, Math.max(WEIGHT_MIN, stepped))

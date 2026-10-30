@@ -36,16 +36,16 @@ export function HistoryScreen() {
         ) : (
           <div className={styles.list}>
             {rows.map((t) => {
-              const pending = t.status === 'pending'
+              const prefix = t.status === 'pending' ? 'Chờ xác nhận · ' : t.status === 'rejected' ? 'Bị từ chối · ' : ''
               return (
                 <ListRow
                   key={t.id}
                   icon={t.type === 'recycle' ? <Recycle size={26} strokeWidth={2.2} /> : <GiftColorIcon />}
                   iconTone={t.type === 'recycle' ? 'primary' : 'warm'}
                   title={t.type === 'recycle' ? 'Đổi rác' : 'Đổi quà'}
-                  subtitle={pending ? `Chờ xác nhận · ${formatDateTime(t.createdAt)}` : formatDateTime(t.createdAt)}
-                  value={formatPoints(t.points, true)}
-                  valueTone={pending ? 'muted' : t.points < 0 ? 'negative' : 'positive'}
+                  subtitle={prefix + formatDateTime(t.createdAt)}
+                  value={t.status === 'rejected' ? '0 điểm' : formatPoints(t.points, true)}
+                  valueTone={t.status !== 'confirmed' ? 'muted' : t.points < 0 ? 'negative' : 'positive'}
                 />
               )
             })}

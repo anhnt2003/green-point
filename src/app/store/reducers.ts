@@ -2,7 +2,7 @@
  * Pure state transitions. Every business rule lives here so it can be unit-tested
  * without React or localStorage. The zustand store only wires these to actions.
  */
-import { calcPoints, sumWeights, totalWeight } from '@/app/domain/points'
+import { calcPoints, totalWeight } from '@/app/domain/points'
 import type {
   Account,
   DataState,
@@ -69,44 +69,96 @@ export function createRecycle(
   }
 }
 
-/**
- * Staff confirmation (simulated). Idempotent: confirming twice credits once.
- * Credits the citizen and adds the weight to the collection point's business stats.
- */
-export function confirmRecycle(state: DataState, code: string, now: string): DataState {
-  const tx = state.transactions.find((t) => t.code === code)
-  if (!tx || tx.type !== 'recycle' || tx.status !== 'pending') return state
-  const citizen = state.users[tx.userId]
-  if (!citizen) return state
+export type HandleError = 'NOT_FOUND' | 'NOT_PENDING' | 'OTHER_POINT'
 
+/** Finds a pending recycle transaction that this staff member's collection point may handle. */
+function pendingFor(state: DataState, code: string, staffUserId: string): Transaction | HandleError {
+  const tx = state.transactions.find((t) => t.type === 'recycle' && t.code === code)
+  if (!tx || !state.users[tx.userId]) return 'NOT_FOUND'
+  if (tx.status !== 'pending') return 'NOT_PENDING'
+  if (state.users[staffUserId]?.collectionPointId !== tx.collectionPointId) return 'OTHER_POINT'
+  return tx
+}
+
+/**
+ * BR-04 + F-07: the staff weighs the waste and confirms. Points are computed from the
+ * actual scale weights (BR-01); the citizen's estimate is kept for reference. Credits
+ * the citizen once and adds the weight to the collection point's business stats.
+ */
+export function confirmRecycle(
+  state: DataState,
+  input: { code: string; staffUserId: string; actualItems: WasteItem[]; now: string },
+  types: readonly WasteType[],
+): Ok<{ transaction: Transaction }> | Fail<HandleError | 'EMPTY'> {
+  const tx = pendingFor(state, input.code, input.staffUserId)
+  if (typeof tx === 'string') return fail(tx)
+  const items = input.actualItems.filter((i) => i.weightKg > 0)
+  if (items.length === 0) return fail('EMPTY')
+
+  const citizen = state.users[tx.userId]
+  const points = calcPoints(items, types)
   const weightByType = { ...citizen.weightByType }
-  for (const item of tx.items ?? []) weightByType[item.code] += item.weightKg
-  const addedKg = sumWeights(weightByType) - sumWeights(citizen.weightByType)
+  for (const item of items) weightByType[item.code] = round1(weightByType[item.code] + item.weightKg)
+  const addedKg = totalWeight(items)
 
   const users: Record<string, User> = {
     ...state.users,
-    [citizen.id]: { ...citizen, pointBalance: citizen.pointBalance + tx.points, weightByType },
+    [citizen.id]: { ...citizen, pointBalance: citizen.pointBalance + points, weightByType },
   }
-  const operator = Object.values(users).find((u) => u.collectionPointId === tx.collectionPointId && u.business)
-  if (operator?.business) {
+  const operator = users[input.staffUserId]
+  if (operator.business) {
     users[operator.id] = {
       ...operator,
       business: {
         ...operator.business,
         ordersToday: operator.business.ordersToday + 1,
-        totalWeightKg: operator.business.totalWeightKg + addedKg,
+        totalWeightKg: round1(operator.business.totalWeightKg + addedKg),
       },
     }
   }
 
+  const transaction: Transaction = {
+    ...tx,
+    status: 'confirmed',
+    items,
+    points,
+    estimatedItems: tx.items,
+    estimatedPoints: tx.points,
+    handledBy: input.staffUserId,
+    confirmedAt: input.now,
+  }
   return {
-    ...state,
-    users,
-    transactions: state.transactions.map((t) =>
-      t.id === tx.id ? { ...t, status: 'confirmed' as const, confirmedAt: now } : t,
-    ),
+    ok: true,
+    transaction,
+    state: { ...state, users, transactions: state.transactions.map((t) => (t.id === tx.id ? transaction : t)) },
   }
 }
+
+/** F-07: the staff refuses the handover (e.g. unsorted or dirty waste). No points are credited. */
+export function rejectRecycle(
+  state: DataState,
+  input: { code: string; staffUserId: string; reason: string; now: string },
+): Ok<{ transaction: Transaction }> | Fail<HandleError> {
+  const tx = pendingFor(state, input.code, input.staffUserId)
+  if (typeof tx === 'string') return fail(tx)
+  const transaction: Transaction = {
+    ...tx,
+    status: 'rejected',
+    points: 0,
+    estimatedItems: tx.items,
+    estimatedPoints: tx.points,
+    handledBy: input.staffUserId,
+    rejectReason: input.reason,
+    confirmedAt: input.now,
+  }
+  return {
+    ok: true,
+    transaction,
+    state: { ...state, transactions: state.transactions.map((t) => (t.id === tx.id ? transaction : t)) },
+  }
+}
+
+const round1 = (n: number) => Math.round(n * 10) / 10
 
 /** BR-05: redeem deducts the reward price; rejected when the balance is too low. */
 export function redeemReward(
@@ -150,12 +202,4 @@ export function createLoanApplication(
     status: 'submitted' as const,
   }
   return { ok: true, state: { ...state, loanApplications: [application, ...state.loanApplications] } }
-}
-
-/** Pending recycle transactions older than `maxAgeMs` (used after a reload). */
-export function stalePendingCodes(state: DataState, nowMs: number, maxAgeMs: number): string[] {
-  return state.transactions
-    .filter((t) => t.type === 'recycle' && t.status === 'pending' && t.code)
-    .filter((t) => nowMs - new Date(t.createdAt).getTime() >= maxAgeMs)
-    .map((t) => t.code as string)
 }

@@ -53,6 +53,15 @@ export function AppHeader({
   )
 }
 
+/** Round icon button for the right side of AppHeader. */
+export function HeaderAction({ label, onClick, children }: { label: string; onClick(): void; children: ReactNode }) {
+  return (
+    <button type="button" className={`${styles.iconButton} pressable`} onClick={onClick} aria-label={label} title={label}>
+      {children}
+    </button>
+  )
+}
+
 /** Home variant: leaf logo + brand on the left, bell and avatar on the right. */
 export function HomeHeader({ initials, onAvatar }: { initials: string; onAvatar?: () => void }) {
   return (

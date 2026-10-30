@@ -1,4 +1,4 @@
-import { ChevronRight, Gift, Leaf, LogOut, type LucideIcon } from 'lucide-react'
+import { BookOpen, ChevronRight, Gift, Leaf, LogOut, type LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { Card } from '@/app/components/Card'
@@ -35,6 +35,7 @@ export function ProfileScreen() {
     { label: 'Tác động của bạn', to: '/impact', Icon: Leaf },
     { label: 'Lịch sử giao dịch', to: '/history', Icon: HistoryIcon },
     { label: 'Đổi quà', to: '/rewards', Icon: Gift },
+    { label: 'Hướng dẫn phân loại rác', to: '/guide', Icon: BookOpen },
   ]
 
   return (

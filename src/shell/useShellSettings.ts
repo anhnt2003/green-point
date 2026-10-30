@@ -6,7 +6,11 @@ export type ZoomMode = 'fit' | 'actual'
 interface ShellSettings {
   platform: Platform
   zoom: ZoomMode
+  /** Simulator toolbar visible. Hidden by default on phone-sized screens. */
+  menu: boolean
 }
+
+export const isNarrowScreen = () => window.matchMedia('(max-width: 640px)').matches
 
 const KEY = 'greenpoint:simulator'
 
@@ -16,9 +20,10 @@ function load(): ShellSettings {
     return {
       platform: isPlatform(raw.platform) ? raw.platform : 'ios',
       zoom: raw.zoom === 'actual' ? 'actual' : 'fit',
+      menu: typeof raw.menu === 'boolean' ? raw.menu : !isNarrowScreen(),
     }
   } catch {
-    return { platform: 'ios', zoom: 'fit' }
+    return { platform: 'ios', zoom: 'fit', menu: !isNarrowScreen() }
   }
 }
 

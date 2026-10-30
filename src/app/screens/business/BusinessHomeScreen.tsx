@@ -12,7 +12,7 @@ import styles from './Business.module.css'
 
 export const WAREHOUSE_TILES = [
   { label: 'Tồn kho', to: '/business/inventory', Icon: Package },
-  { label: 'Đơn hàng', to: '/business/orders', Icon: ClipboardList },
+  { label: 'Đơn hàng', to: '/business/manage', Icon: ClipboardList },
   { label: 'Báo cáo', to: '/business/reports', Icon: ChartColumn },
 ] as const
 

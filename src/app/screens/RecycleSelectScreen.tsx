@@ -1,3 +1,4 @@
+import { BookOpen } from 'lucide-react'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
@@ -72,6 +73,10 @@ export function RecycleSelectScreen() {
         <Button onClick={submit} disabled={points === 0}>
           Tiếp tục
         </Button>
+        <button type="button" className={`${styles.guideLink} pressable`} onClick={() => navigate('/guide')}>
+          <BookOpen size={16} />
+          Xem hướng dẫn phân loại
+        </button>
       </div>
     </Screen>
   )

@@ -1,5 +1,6 @@
-import { LoaderCircle, LocateFixed, MapPin, Recycle, Search, X } from 'lucide-react'
+import { BookOpen, LoaderCircle, LocateFixed, MapPin, Recycle, Search, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { FilterChips, type ChipOption } from '@/app/components/FilterChips'
 import { CATEGORY_LABEL, COLLECTION_POINTS } from '@/app/data/seed'
@@ -7,7 +8,7 @@ import { formatDistanceKm, normalizeSearch } from '@/app/domain/format'
 import { sortByDistance, type LatLng } from '@/app/domain/geo'
 import type { WasteCategory } from '@/app/domain/types'
 import { toast } from '@/app/feedback/useFeedback'
-import { AppHeader } from '@/app/layout/AppHeader'
+import { AppHeader, HeaderAction } from '@/app/layout/AppHeader'
 import { Screen } from '@/app/layout/Screen'
 import { CollectionMap, type CollectionMapHandle } from '@/app/map/CollectionMap'
 import { useUserLocation, type LocationStatus } from '@/app/map/useUserLocation'
@@ -34,6 +35,7 @@ const FALLBACK_NOTICE: Partial<Record<LocationStatus, string>> = {
 
 /** Screen 03 — Bản đồ điểm thu gom (GreenMap), sorted by the real device position. */
 export function MapScreen() {
+  const navigate = useNavigate()
   const { location, status, retry } = useUserLocation()
   const isLive = status === 'live'
   const mapRef = useRef<CollectionMapHandle>(null)
@@ -101,7 +103,20 @@ export function MapScreen() {
   const notice = FALLBACK_NOTICE[status]
 
   return (
-    <Screen header={<AppHeader title="Điểm thu gom gần bạn" />} scroll={false} bodyClassName={styles.body}>
+    <Screen
+      header={
+        <AppHeader
+          title="Điểm thu gom gần bạn"
+          right={
+            <HeaderAction label="Hướng dẫn phân loại" onClick={() => navigate('/guide')}>
+              <BookOpen size={22} strokeWidth={2} />
+            </HeaderAction>
+          }
+        />
+      }
+      scroll={false}
+      bodyClassName={styles.body}
+    >
       <form
         className={styles.search}
         role="search"

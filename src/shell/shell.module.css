@@ -28,6 +28,43 @@
   color: #0e3b25;
 }
 
+.hideButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  margin-left: 6px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 14px;
+  background: #edf1ee;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.hideButton:hover {
+  background: #e2e8e3;
+}
+
+.menuButton {
+  position: fixed;
+  top: calc(env(safe-area-inset-top, 0px) + 10px);
+  right: 10px;
+  z-index: 10;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  color: #0e3b25;
+  cursor: pointer;
+}
+
 .toolbarBrand em {
   font-style: normal;
   font-weight: 500;
@@ -303,4 +340,45 @@
   opacity: 0.85;
   pointer-events: none;
   z-index: 4;
+}
+
+/* Phones: compact toolbar, thin margin around the device. */
+@media (max-width: 640px) {
+  .toolbar {
+    gap: 8px 10px;
+    padding: 8px 10px;
+  }
+
+  .toolbarBrand {
+    width: 100%;
+  }
+
+  .hideButton {
+    margin-left: auto;
+  }
+
+  .toolLabel {
+    display: none;
+  }
+
+  .toolGroup {
+    gap: 6px;
+  }
+
+  .toolButton {
+    height: 30px;
+    padding: 0 9px;
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  .segment {
+    height: 26px;
+    padding: 0 10px;
+    font-size: 12px;
+  }
+
+  .stage {
+    padding: 8px;
+  }
 }

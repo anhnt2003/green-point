@@ -2,10 +2,9 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { ACCOUNTS, DEFAULT_COLLECTION_POINT_ID, WASTE_TYPES, createSeedState } from '@/app/data/seed'
 import type { DataState, LoanPurpose, Reward, Role, WasteItem } from '@/app/domain/types'
+import { DATA_VERSION, migrateData } from './migrations'
 import * as reducers from './reducers'
 
-/** Simulated delay before the collection-point staff "confirms" a recycle transaction. */
-export const CONFIRM_DELAY_MS = 2000
 export const STORAGE_KEY = 'greenpoint:data'
 
 interface Actions {
@@ -13,7 +12,9 @@ interface Actions {
   loginAs(role: Role): void
   logout(): void
   createRecycle(items: WasteItem[]): { ok: true; code: string } | { ok: false; error: string }
-  confirmRecycle(code: string): void
+  /** Staff of the logged-in collection point weighs and confirms (F-07). */
+  confirmRecycle(code: string, actualItems: WasteItem[]): { ok: true; points: number } | { ok: false; error: string }
+  rejectRecycle(code: string, reason: string): { ok: true } | { ok: false; error: string }
   redeem(reward: Reward): { ok: true } | { ok: false; error: 'INSUFFICIENT_POINTS' | 'UNKNOWN_USER' | 'NO_SESSION' }
   createLoanApplication(purposes: LoanPurpose[]): { ok: true } | { ok: false; error: string }
   reset(): void
@@ -22,7 +23,6 @@ interface Actions {
 export type Store = DataState & Actions
 
 const nowIso = () => new Date().toISOString()
-const scheduled = new Set<string>()
 
 export const useStore = create<Store>()(
   persist(
@@ -30,15 +30,6 @@ export const useStore = create<Store>()(
       const data = (): DataState => {
         const { session, users, transactions, loanApplications, codeSeq } = get()
         return { session, users, transactions, loanApplications, codeSeq }
-      }
-
-      const scheduleConfirm = (code: string) => {
-        if (scheduled.has(code)) return
-        scheduled.add(code)
-        setTimeout(() => {
-          scheduled.delete(code)
-          get().confirmRecycle(code)
-        }, CONFIRM_DELAY_MS)
       }
 
       return {
@@ -70,12 +61,25 @@ export const useStore = create<Store>()(
           )
           if (!res.ok) return res
           set(res.state)
-          scheduleConfirm(res.transaction.code as string)
           return { ok: true, code: res.transaction.code as string }
         },
 
-        confirmRecycle(code) {
-          set(reducers.confirmRecycle(data(), code, nowIso()))
+        confirmRecycle(code, actualItems) {
+          const staffUserId = get().session?.userId
+          if (!staffUserId) return { ok: false, error: 'NO_SESSION' }
+          const res = reducers.confirmRecycle(data(), { code, staffUserId, actualItems, now: nowIso() }, WASTE_TYPES)
+          if (!res.ok) return res
+          set(res.state)
+          return { ok: true, points: res.transaction.points }
+        },
+
+        rejectRecycle(code, reason) {
+          const staffUserId = get().session?.userId
+          if (!staffUserId) return { ok: false, error: 'NO_SESSION' }
+          const res = reducers.rejectRecycle(data(), { code, staffUserId, reason, now: nowIso() })
+          if (!res.ok) return res
+          set(res.state)
+          return { ok: true }
         },
 
         redeem(reward) {
@@ -97,14 +101,14 @@ export const useStore = create<Store>()(
         },
 
         reset() {
-          scheduled.clear()
           set(createSeedState())
         },
       }
     },
     {
       name: STORAGE_KEY,
-      version: 1,
+      version: DATA_VERSION,
+      migrate: (persisted, version) => migrateData(persisted, version) as unknown as Store,
       storage: createJSONStorage(() => localStorage),
       partialize: ({ session, users, transactions, loanApplications, codeSeq }) => ({
         session,
@@ -113,19 +117,6 @@ export const useStore = create<Store>()(
         loanApplications,
         codeSeq,
       }),
-      // A reload while a confirmation was pending must not lose the points.
-      onRehydrateStorage: () => (state) => {
-        if (!state) return
-        const now = Date.now()
-        const stale = reducers.stalePendingCodes(state, now, CONFIRM_DELAY_MS)
-        stale.forEach((code) => state.confirmRecycle(code))
-        state.transactions
-          .filter((t) => t.status === 'pending' && t.code && !stale.includes(t.code))
-          .forEach((t) => {
-            const wait = Math.max(0, CONFIRM_DELAY_MS - (now - new Date(t.createdAt).getTime()))
-            setTimeout(() => useStore.getState().confirmRecycle(t.code as string), wait)
-          })
-      },
     },
   ),
 )

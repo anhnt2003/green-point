@@ -29,3 +29,21 @@ export function useCitizenStats() {
     weightByType: user?.weightByType,
   }
 }
+
+/** Recycle transactions handed over at the logged-in staff member's collection point, newest first. */
+export function usePointTransactions(status: 'pending' | 'handled'): Transaction[] {
+  return useStore(
+    useShallow((s) => {
+      const pointId = s.session ? s.users[s.session.userId]?.collectionPointId : undefined
+      if (!pointId) return []
+      return s.transactions
+        .filter((t) => t.type === 'recycle' && t.code && t.collectionPointId === pointId && t.items?.length)
+        .filter((t) => (status === 'pending' ? t.status === 'pending' : t.status !== 'pending'))
+        .sort((a, b) => (b.confirmedAt ?? b.createdAt).localeCompare(a.confirmedAt ?? a.createdAt))
+    }),
+  )
+}
+
+export function useUser(id: string | undefined): User | undefined {
+  return useStore((s) => (id ? s.users[id] : undefined))
+}

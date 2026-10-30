@@ -127,6 +127,9 @@
 .dialog_ios .dialogAction + .dialogAction {
   border-left: 0.5px solid rgba(60, 60, 67, 0.29);
 }
+.dialog_ios .dialogActionsStacked .dialogAction {
+  flex: none;
+}
 .dialog_ios .dialogActionsStacked .dialogAction + .dialogAction {
   border-left: 0;
   border-top: 0.5px solid rgba(60, 60, 67, 0.29);
@@ -174,6 +177,11 @@
 }
 .dialog_android .action_destructive {
   color: var(--c-danger);
+}
+.dialog_android .dialogActionsStacked {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 @keyframes fade {

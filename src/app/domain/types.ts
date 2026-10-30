@@ -68,17 +68,27 @@ export interface User {
 }
 
 export type TransactionType = 'recycle' | 'redeem'
-export type TransactionStatus = 'pending' | 'confirmed'
+export type TransactionStatus = 'pending' | 'confirmed' | 'rejected'
 
 export interface Transaction {
   id: string
   userId: string
   type: TransactionType
   status: TransactionStatus
-  /** Signed: positive for recycle (estimated while pending), negative for redeem. */
+  /**
+   * Signed points: recycle = estimate while pending, actual once confirmed, 0 if rejected;
+   * redeem = negative reward price.
+   */
   points: number
   code?: string
+  /** Recycle: the citizen's estimate while pending, the staff's scale weights once confirmed. */
   items?: WasteItem[]
+  /** Recycle, after staff handling: what the citizen declared. */
+  estimatedItems?: WasteItem[]
+  estimatedPoints?: number
+  /** Staff user who confirmed or rejected. */
+  handledBy?: string
+  rejectReason?: string
   collectionPointId?: string
   rewardId?: string
   createdAt: string

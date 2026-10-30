@@ -1,0 +1,309 @@
+.section {
+  padding-top: 8px;
+}
+
+.center {
+  text-align: center;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.rowButton {
+  display: block;
+  width: 100%;
+  border-radius: var(--r-card);
+  text-align: left;
+}
+
+.emptyLine {
+  padding: 4px 4px 12px;
+}
+
+.error {
+  margin-top: -4px;
+  padding-left: 4px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--c-danger);
+}
+
+/* ---------- Scanner ---------- */
+.viewfinder {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  max-height: 320px;
+  width: 100%;
+  margin: 0 auto;
+  border-radius: var(--r-card-lg);
+  overflow: hidden;
+  background: #0f1a14;
+}
+
+.video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frame {
+  position: absolute;
+  inset: 18%;
+  border-radius: 18px;
+  box-shadow: 0 0 0 999px rgba(0, 0, 0, 0.35);
+  background:
+    linear-gradient(#fff, #fff) top left / 28px 4px no-repeat,
+    linear-gradient(#fff, #fff) top left / 4px 28px no-repeat,
+    linear-gradient(#fff, #fff) top right / 28px 4px no-repeat,
+    linear-gradient(#fff, #fff) top right / 4px 28px no-repeat,
+    linear-gradient(#fff, #fff) bottom left / 28px 4px no-repeat,
+    linear-gradient(#fff, #fff) bottom left / 4px 28px no-repeat,
+    linear-gradient(#fff, #fff) bottom right / 28px 4px no-repeat,
+    linear-gradient(#fff, #fff) bottom right / 4px 28px no-repeat;
+}
+
+.scanLine {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  height: 2px;
+  border-radius: 2px;
+  background: #7be29a;
+  box-shadow: 0 0 12px #7be29a;
+  animation: scan 2.2s ease-in-out infinite alternate;
+}
+
+@keyframes scan {
+  from {
+    top: 8%;
+  }
+  to {
+    top: 92%;
+  }
+}
+
+.cameraMessage {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px;
+  text-align: center;
+  font-size: var(--fs-body);
+  line-height: 1.5;
+  color: #e6f3e8;
+}
+
+.manual {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.manual > :first-child {
+  flex: 1;
+}
+
+.manualButton {
+  height: 52px;
+  padding: 0 22px;
+}
+
+html[data-platform='android'] .manualButton {
+  height: 56px;
+}
+
+/* ---------- Weighing ---------- */
+.who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary-tint);
+  color: var(--c-primary);
+  font-weight: 700;
+}
+
+.whoText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.whoText strong {
+  font-size: var(--fs-heading);
+  color: var(--c-primary-dark);
+}
+
+.badge {
+  flex: none;
+  padding: 4px 10px;
+  border-radius: var(--r-chip);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+}
+
+.badge_pending {
+  background: var(--c-warm-tint);
+  color: #9a5b13;
+}
+
+.badge_confirmed {
+  background: var(--c-primary-tint);
+  color: var(--c-primary);
+}
+
+.badge_rejected {
+  background: #fde8e8;
+  color: var(--c-danger);
+}
+
+.weighList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.weighRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.weighText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.weighName {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px var(--pad);
+}
+
+.totalLabel {
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+
+.totalValue {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.rejectButton {
+  flex: 1;
+  height: var(--h-button);
+}
+
+.confirmButton {
+  flex: 2;
+  height: var(--h-button);
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.summaryRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-body);
+}
+
+.summaryRow strong {
+  color: var(--c-primary-dark);
+  text-align: right;
+}
+
+.summaryTotal {
+  padding-top: 10px;
+  border-top: 1px solid var(--c-border);
+}
+
+.summaryTotal strong {
+  color: var(--c-primary);
+}
+
+/* ---------- Manage ---------- */
+.scanCard {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 18px var(--pad);
+  border-radius: var(--r-card-lg);
+  background: linear-gradient(135deg, #258a4e 0%, var(--c-primary) 60%, #1d7340 100%);
+  color: var(--c-on-primary);
+  text-align: left;
+  box-shadow: 0 6px 16px rgba(33, 128, 72, 0.22);
+}
+
+.scanIcon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.scanText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.scanText strong {
+  font-size: var(--fs-heading);
+}
+
+.scanText span {
+  font-size: var(--fs-caption);
+  opacity: 0.9;
+  line-height: 1.45;
+}

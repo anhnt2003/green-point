@@ -31,8 +31,8 @@ App có 2 vai trò giao diện: **Citizen app** (màn 01–08) và **Business ap
 ### 3.1 Đổi rác lấy điểm [TL + MU]
 1. Citizen chọn loại rác và nhập khối lượng → hệ thống hiển thị **tổng điểm dự kiến** (màn 04).
 2. Bấm "Tiếp tục" → hệ thống tạo giao dịch, sinh **mã giao dịch + QR** (ví dụ `#GP256789`) (màn 05).
-3. Tại điểm thu gom, Staff quét QR, cân thực tế, xác nhận. [TL] (màn của Staff chưa có [?])
-4. Giao dịch chuyển sang **Đã xác nhận**, cộng điểm cho Citizen (+45 điểm). [MU]
+3. Tại điểm thu gom, Staff quét QR, cân thực tế rồi xác nhận hoặc từ chối kèm lý do. [TL] Màn: Quét mã nhận rác, Cân và xác nhận.
+4. Giao dịch chuyển sang **Đã xác nhận** và cộng điểm theo số cân thực tế, hoặc **Bị từ chối** và không cộng điểm. [MU + quyết định Q-01, Q-02]
 
 ### 3.2 Đổi quà [MU]
 1. Citizen vào "Đổi quà" (màn 06), lọc theo danh mục, bấm "Đổi quà" trên một món.
@@ -65,15 +65,15 @@ App có 2 vai trò giao diện: **Citizen app** (màn 01–08) và **Business ap
 | F-01 | Onboarding | Splash, nút "Bắt đầu", link "Đăng nhập" | 01 | [MU] |
 | F-02 | Home | Tổng điểm, kg đã bàn giao, số lần giao dịch, 4 lối tắt | 02 | [MU] |
 | F-03 | GreenMap | Bản đồ điểm thu gom gần nhất, vị trí người dùng, tìm theo tên/khu vực, lọc theo loại rác, card chi tiết + "Chỉ đường" | 03 | [TL + MU] |
-| F-04 | GreenMap | Hướng dẫn phân loại rác | — chưa có màn | [TL] |
+| F-04 | GreenMap | Hướng dẫn phân loại rác | Hướng dẫn (mới) | [TL] |
 | F-05 | Đổi rác | Chọn loại + khối lượng, tính điểm dự kiến, stepper 3 bước | 04 | [TL + MU] |
 | F-06 | Đổi rác | Mã giao dịch + QR, trạng thái xác nhận | 05 | [MU] |
-| F-07 | Đổi rác | Màn Staff: quét QR, nhập số cân, xác nhận/từ chối | — chưa có màn | [TL] |
+| F-07 | Đổi rác | Màn Staff: quét QR, nhập số cân, xác nhận/từ chối | Quét mã, Cân và xác nhận (mới) | [TL] |
 | F-08 | GreenRewards | Danh mục quà, lọc theo Vật phẩm xanh / Voucher / Cây xanh, đổi quà | 06 | [TL + MU] |
 | F-09 | GreenImpact | Tổng kg, quy đổi tương đương, tỷ lệ có xác nhận tiếp nhận; tab Tổng quan / Chi tiết / Chứng nhận | 07 | [TL + MU] |
 | F-10 | GreenImpact | Lịch sử giao dịch, lọc Tất cả / Đổi rác / Đổi quà | 08 | [TL + MU] |
 | F-11 | GreenBusiness | Tổng kg thu gom (so tháng trước), đơn hôm nay, doanh thu ước tính, Quản lý kho (Tồn kho / Đơn hàng / Báo cáo) | 09 | [TL + MU] |
-| F-12 | GreenBusiness | Chi phí, lịch sử giao nhận | — chưa có màn | [TL] |
+| F-12 | GreenBusiness | Chi phí, lịch sử giao nhận | Lịch sử giao nhận ở tab Quản lý; chi phí chưa có màn | [TL] |
 | F-13 | GreenCapital | Chọn mục đích vay, tạo hồ sơ vay vốn, disclaimer | 10 | [TL + MU] |
 
 ## 6. Thực thể dữ liệu (nháp, chỉ gồm trường thấy trong mockup)
@@ -102,13 +102,18 @@ App có 2 vai trò giao diện: **Citizen app** (màn 01–08) và **Business ap
 | Q-09 | Đăng ký/đăng nhập, KYC, điểm có hết hạn không, tồn kho quà, cách nhận quà, đối soát voucher với đối tác. |
 | Q-10 | Dữ liệu nào chia sẻ cho ngân hàng khi tạo hồ sơ vay, và cơ chế đồng ý (consent) của cơ sở thu gom? |
 
-## 8. Quyết định cho bản simulator web (2026-10-30)
+## 8. Quyết định cho bản simulator web
+
+Cập nhật lần cuối: 2026-10-30.
 
 | Câu hỏi | Quyết định |
 |---|---|
-| Q-01/Q-02 | Citizen tự nhập khối lượng dự kiến; màn 05 hiện "Đang chờ xác nhận" rồi tự chuyển "Đã xác nhận" sau ~2s (giả lập Staff), điểm cộng = điểm dự kiến. Làm tròn `Math.round` từng dòng. |
-| Q-03 | Không có màn Staff trong phạm vi này. |
-| Q-07 | Giữ số dư 245 theo mockup; "6 lần giao dịch" = tổng mọi giao dịch (đổi rác + đổi quà). |
-| Q-08 | Tab thứ 3 của Business là "Tài chính" (GreenCapital); "Báo cáo" là ô trong Quản lý kho. |
+| Q-01 | Người dân khai khối lượng dự kiến ở màn 04. Nhân viên nhập số cân thực tế khi nhận rác. **Điểm cộng tính theo số cân thực tế** (BR-01), số dự kiến được giữ lại để đối chiếu. Người dân không cần đồng ý lại khi số cân khác dự kiến. Làm tròn `Math.round` từng dòng. Cân có độ chính xác 0,1 kg, tối đa 500 kg. |
+| Q-02 | Giao dịch có ba trạng thái: **Chờ xác nhận**, **Đã xác nhận**, **Bị từ chối** kèm lý do. Không còn tự xác nhận sau 2 giây. Chưa có hạn dùng cho mã QR. |
+| Q-03 | Nhân viên dùng tài khoản của điểm thu gom (`business`). Tab **Quản lý** có nút **Quét mã nhận rác**, danh sách chờ cân và lịch sử giao nhận. Ô "Đơn hàng" trên GreenBusiness mở tab này. Nhân viên chỉ xử lý được giao dịch của điểm thu gom mình. |
+| Q-04 | Hướng dẫn phân loại (F-04) thuộc GreenMap: mở từ nút sách trên màn bản đồ, từ màn đổi rác và từ tab Cá nhân. |
+| Q-07 | Giữ số dư 245 theo mockup. "Số lần giao dịch" đếm các giao dịch đã xác nhận, gồm cả đổi rác và đổi quà. |
+| Q-08 | Tab thứ 3 của Business là "Tài chính" (GreenCapital). "Báo cáo" là ô trong Quản lý kho. |
+| Q-09 | Đăng nhập mock: `citizen` và `business`, cùng mật khẩu `GreenPoint@2026`. Không dùng mật khẩu phổ biến như `123456` vì Chrome cảnh báo lộ mật khẩu bằng hộp thoại chặn cả tab sau khi đăng nhập. |
 | F-03 | Vị trí người dùng lấy từ GPS của thiết bị. Không có quyền hoặc không có tín hiệu thì dùng vị trí mặc định gần ĐH Bách Khoa và báo trên bản đồ. Điểm thu gom mẫu giữ nguyên ở Hà Nội. |
-| Q-09 | Login account/password mock: `citizen` và `business`, cùng mật khẩu `GreenPoint@2026`. Không dùng mật khẩu phổ biến như `123456` vì Chrome cảnh báo lộ mật khẩu bằng hộp thoại chặn cả tab sau khi đăng nhập. |
+| F-07 | Quét QR bằng camera sau của thiết bị, dùng BarcodeDetector nếu trình duyệt hỗ trợ, nếu không thì dùng thư viện jsQR. Luôn có ô nhập mã tay. Không có máy chủ nên chỉ quét được giao dịch tạo trên cùng trình duyệt. |

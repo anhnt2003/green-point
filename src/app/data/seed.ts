@@ -120,7 +120,7 @@ export const LOAN_PURPOSES: readonly { id: LoanPurpose; label: string }[] = [
 export const DEMO_PASSWORD = 'GreenPoint@2026'
 
 export const ACCOUNTS: readonly Account[] = [
-  { username: 'citizen', password: DEMO_PASSWORD, userId: 'u-lananh' },
+  { username: 'citizen', password: DEMO_PASSWORD, userId: 'u-citizen' },
   { username: 'business', password: DEMO_PASSWORD, userId: 'u-greenhouse' },
 ]
 
@@ -130,12 +130,12 @@ export const VERIFIED_RECYCLING_RATE = 0.8
 export const CODE_BASE = 256789
 
 const SEED_USERS: Record<string, User> = {
-  'u-lananh': {
-    id: 'u-lananh',
+  'u-citizen': {
+    id: 'u-citizen',
     role: 'citizen',
-    name: 'Lan Anh',
+    name: 'Tuấn Anh',
     username: 'citizen',
-    avatarInitials: 'LA',
+    avatarInitials: 'TA',
     pointBalance: 245,
     weightByType: { paper: 4.5, pet: 2.5, aluminum: 1.5 },
   },
@@ -154,7 +154,7 @@ const SEED_USERS: Record<string, User> = {
 
 const seedTx = (id: string, type: Transaction['type'], points: number, at: string): Transaction => ({
   id,
-  userId: 'u-lananh',
+  userId: 'u-citizen',
   type,
   status: 'confirmed',
   points,
