@@ -1,0 +1,249 @@
+/* ---------- 09 GreenBusiness ---------- */
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 0 6px;
+}
+
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+.totalCard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 20px var(--pad);
+}
+
+.totalLabel {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.totalValue {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.trend {
+  position: absolute;
+  top: 26px;
+  right: 22px;
+  color: var(--c-primary);
+}
+
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.delta b {
+  color: var(--c-primary);
+  font-weight: 600;
+}
+
+.deltaDot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.section {
+  padding-top: 10px;
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  aspect-ratio: 1 / 0.86;
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--c-primary);
+  font-size: var(--fs-body);
+}
+
+.tile span {
+  color: var(--c-text);
+}
+
+.banner {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 18px var(--pad) 18px;
+}
+
+.bannerHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.bannerIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.bannerTitle {
+  font-size: var(--fs-heading);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.bannerText {
+  font-size: var(--fs-caption);
+  line-height: 1.55;
+  color: var(--c-primary-dark);
+  padding-left: 42px;
+  margin-bottom: 4px;
+}
+
+/* ---------- 10 GreenCapital ---------- */
+.capitalHead {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 0 4px;
+}
+
+.capitalBrand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.capitalTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.capitalSubtitle {
+  text-align: center;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--c-primary-dark);
+}
+
+.capitalScene {
+  border-radius: var(--r-card-lg);
+  background: var(--c-primary-tint);
+  line-height: 0;
+  overflow: hidden;
+}
+
+.capitalScene svg {
+  width: 100%;
+  height: auto;
+}
+
+.purposes {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.purpose {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 40px;
+  padding: 0 8px;
+  border-radius: 10px;
+  text-align: left;
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+
+.purposeIcon {
+  flex: none;
+  color: var(--c-primary);
+}
+
+.purposeChecked {
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.disclaimer {
+  padding: 4px 4px 0;
+}
+
+/* ---------- Manage / placeholders / profile ---------- */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.placeholderIcon {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary-tint);
+  color: var(--c-primary);
+}
+
+.placeholderTitle {
+  font-size: var(--fs-heading);
+  color: var(--c-primary-dark);
+}
+
+.pointInfo {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.pointInfo p {
+  line-height: 1.5;
+}
+
+.pointInfoIcon {
+  flex: none;
+  color: var(--c-primary);
+  margin-top: 2px;
+}

@@ -1,0 +1,21 @@
+.greeting {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px 0 6px;
+}
+
+.hello {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.sub {
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+.section {
+  padding-top: 14px;
+}

@@ -1,0 +1,180 @@
+/* ---------- 04 ---------- */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 6px;
+  padding: 14px 12px;
+  border-radius: var(--r-card-lg);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.panelTitle {
+  font-size: var(--fs-heading);
+  font-weight: 600;
+  color: var(--c-text);
+  padding: 2px 4px 4px;
+}
+
+.wasteRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 8px 10px 10px;
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  box-shadow: inset 0 0 0 1px var(--c-border);
+}
+
+.wasteText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.wasteName {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.wasteRate {
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px var(--pad);
+  margin: 6px 0;
+}
+
+.totalLabel {
+  font-size: var(--fs-heading);
+  color: var(--c-text);
+}
+
+.totalValue {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--c-primary);
+}
+
+.totalValue small {
+  font-size: 28px;
+}
+
+/* ---------- 05 ---------- */
+.qrCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 28px var(--pad) 22px;
+}
+
+.qrBox {
+  padding: 14px;
+  margin-bottom: 14px;
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  line-height: 0;
+}
+
+.codeLabel {
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.code {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+  letter-spacing: 0.3px;
+}
+
+.statusCard {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px 20px;
+}
+
+.statusHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.statusIcon {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.statusIconDone {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+  animation: pop 360ms cubic-bezier(0.2, 1.4, 0.4, 1);
+}
+
+.statusIconPending {
+  background: var(--c-primary-tint);
+  color: var(--c-primary);
+}
+
+.statusIconPending svg {
+  animation: spin 2.4s linear infinite;
+}
+
+.statusText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 2px;
+}
+
+.statusTitle {
+  font-size: var(--fs-heading);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.statusDesc {
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+
+.statusPoints {
+  align-self: center;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.statusPointsPending {
+  color: var(--c-text-2);
+}
+
+.statusPoints small {
+  font-size: var(--fs-body);
+  font-weight: 500;
+}
+
+@keyframes pop {
+  from {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+}

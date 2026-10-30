@@ -1,0 +1,195 @@
+/* ---------- Toast ---------- */
+.toast {
+  position: fixed;
+  left: var(--space-x);
+  right: var(--space-x);
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-body);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* iOS: banner sliding down below the status bar. */
+.toast_ios {
+  top: calc(var(--safe-top) + 4px);
+  padding: 14px 16px;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(16px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.14);
+  color: var(--c-text);
+  animation: toast-down 320ms cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+/* Android: Material snackbar above the navigation bar. */
+.toast_android {
+  bottom: calc(var(--h-nav) + var(--safe-bottom) + 12px);
+  padding: 14px 16px;
+  border-radius: 4px;
+  background: #2f312f;
+  color: #f0f1ec;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  animation: toast-up 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.toastIcon {
+  flex: none;
+}
+.tone_success .toastIcon {
+  color: var(--c-primary);
+}
+.tone_error .toastIcon {
+  color: var(--c-danger);
+}
+.tone_info .toastIcon {
+  color: var(--c-text-2);
+}
+
+@keyframes toast-down {
+  from {
+    transform: translateY(-140%);
+  }
+  to {
+    transform: none;
+  }
+}
+
+@keyframes toast-up {
+  from {
+    transform: translateY(24px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* ---------- Dialog ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  animation: fade 160ms ease-out;
+}
+.scrim_ios {
+  background: rgba(0, 0, 0, 0.32);
+}
+.scrim_android {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.dialog {
+  overflow: hidden;
+}
+
+/* iOS alert */
+.dialog_ios {
+  width: 270px;
+  border-radius: 14px;
+  background: rgba(246, 246, 246, 0.97);
+  backdrop-filter: blur(20px);
+  text-align: center;
+  animation: ios-alert 220ms cubic-bezier(0.2, 0.9, 0.3, 1.1);
+}
+.dialog_ios .dialogBody {
+  padding: 20px 16px 18px;
+}
+.dialog_ios .dialogTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--c-text);
+}
+.dialog_ios .dialogMessage {
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--c-text);
+}
+.dialog_ios .dialogActions {
+  display: flex;
+  border-top: 0.5px solid rgba(60, 60, 67, 0.29);
+}
+.dialog_ios .dialogActionsStacked {
+  flex-direction: column;
+}
+.dialog_ios .dialogAction {
+  flex: 1;
+  height: 44px;
+  font-size: 17px;
+  color: var(--c-primary);
+}
+.dialog_ios .dialogAction + .dialogAction {
+  border-left: 0.5px solid rgba(60, 60, 67, 0.29);
+}
+.dialog_ios .dialogActionsStacked .dialogAction + .dialogAction {
+  border-left: 0;
+  border-top: 0.5px solid rgba(60, 60, 67, 0.29);
+}
+.dialog_ios .action_primary {
+  font-weight: 600;
+}
+.dialog_ios .action_destructive {
+  color: var(--c-danger);
+}
+
+/* Material 3 dialog */
+.dialog_android {
+  width: 312px;
+  border-radius: 28px;
+  background: #f4f8f4;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  animation: android-dialog 220ms cubic-bezier(0.2, 0, 0, 1);
+}
+.dialog_android .dialogTitle {
+  font-size: 22px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+.dialog_android .dialogMessage {
+  margin-top: 16px;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: var(--c-text-2);
+}
+.dialog_android .dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 24px;
+}
+.dialog_android .dialogAction {
+  height: 40px;
+  padding: 0 12px;
+  border-radius: 20px;
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary);
+}
+.dialog_android .action_destructive {
+  color: var(--c-danger);
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes ios-alert {
+  from {
+    transform: scale(1.12);
+    opacity: 0;
+  }
+}
+@keyframes android-dialog {
+  from {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+}

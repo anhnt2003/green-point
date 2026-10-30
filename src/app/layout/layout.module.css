@@ -1,0 +1,245 @@
+/* ---------- Screen ---------- */
+.screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: var(--c-bg);
+}
+
+.safeTop {
+  flex: none;
+  height: var(--safe-top);
+}
+
+.body {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.noScroll {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow: clip;
+}
+
+.padSafeBottom {
+  padding-bottom: var(--safe-bottom);
+}
+
+.footer {
+  flex: none;
+  padding: 12px var(--space-x) 16px;
+  background: var(--c-bg);
+}
+
+.footer.padSafeBottom {
+  padding-bottom: calc(var(--safe-bottom) + 8px);
+}
+
+/* ---------- Header ---------- */
+.header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: calc(var(--safe-top) + var(--h-header));
+  padding: var(--safe-top) 8px 0;
+}
+
+.headerCenter .headerTitle {
+  flex: 1;
+  text-align: center;
+}
+
+.headerLeft .headerTitle {
+  flex: 1;
+}
+
+.headerTitle {
+  font-size: var(--fs-title);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.headerSpacer {
+  width: 44px;
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.backButton {
+  width: 44px;
+  height: 44px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--c-primary-dark);
+}
+
+html[data-platform='android'] .header {
+  gap: 8px;
+  padding-left: 4px;
+}
+
+html[data-platform='android'] .headerTitle {
+  font-size: 20px;
+  font-weight: 500;
+}
+
+html[data-platform='android'] .backButton {
+  width: 48px;
+  height: 48px;
+}
+
+/* Home header */
+.homeHeader {
+  gap: 12px;
+  padding-left: var(--space-x);
+  padding-right: var(--space-x);
+  min-height: calc(var(--safe-top) + 64px);
+}
+
+.brand {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brandName {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+  letter-spacing: -0.2px;
+}
+
+.iconButton {
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--c-primary-dark);
+}
+
+.badgeDot {
+  position: absolute;
+  top: 8px;
+  right: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--c-danger);
+  border: 1.5px solid var(--c-bg);
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary-tint);
+  border: 2px solid var(--c-surface);
+  box-shadow: var(--shadow-card);
+  color: var(--c-primary);
+  font-weight: 700;
+  font-size: var(--fs-body);
+}
+
+/* ---------- Tabs ---------- */
+.tabLayout {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.tabContent {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  overflow: clip;
+}
+
+/* ---------- Bottom nav ---------- */
+.nav {
+  flex: none;
+  display: flex;
+  height: calc(var(--h-nav) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--c-surface);
+  border-top: 0.5px solid var(--c-border);
+  position: relative;
+  z-index: 5;
+}
+
+.navItem {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  color: var(--c-text-2);
+}
+
+.navItemActive {
+  color: var(--c-primary);
+}
+
+.navIcon {
+  display: grid;
+  place-items: center;
+}
+
+.navLabel {
+  font-size: var(--nav-label);
+  font-weight: 500;
+}
+
+.navItemActive .navLabel {
+  font-weight: 600;
+}
+
+/* Material 3 navigation bar */
+html[data-platform='android'] .nav {
+  border-top: 0;
+  background: #f0f5f0;
+}
+
+html[data-platform='android'] .navItem {
+  gap: 4px;
+  padding-top: 4px;
+}
+
+html[data-platform='android'] .navIcon {
+  width: 64px;
+  height: 32px;
+  border-radius: 16px;
+  transition: background-color 200ms ease;
+}
+
+html[data-platform='android'] .navItemActive {
+  color: var(--c-primary-dark);
+}
+
+html[data-platform='android'] .navItemActive .navIcon {
+  background: var(--c-primary-tint-strong);
+}

@@ -1,0 +1,184 @@
+.body {
+  gap: 12px;
+  padding: 4px var(--space-x) 12px;
+}
+
+.search {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px 0 16px;
+  border-radius: var(--r-button);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card), inset 0 0 0 1px var(--c-border);
+}
+
+.searchIcon {
+  flex: none;
+  color: var(--c-primary-dark);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  font-size: var(--fs-body);
+}
+
+.searchInput::placeholder {
+  color: var(--c-text-2);
+}
+
+.clear {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--c-border);
+  color: var(--c-text-2);
+}
+
+html[data-platform='android'] .search {
+  border-radius: 28px;
+  background: #e9efe9;
+  box-shadow: none;
+}
+
+.mapArea {
+  position: relative;
+  flex: 1;
+  min-height: 160px;
+  margin-bottom: -28px;
+  border-radius: var(--r-card);
+  overflow: hidden;
+  overflow: clip;
+  /* Safari: keep rounded clipping on the WebGL canvas. */
+  isolation: isolate;
+}
+
+.card {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: var(--pad);
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  box-shadow: 0 -2px 16px rgba(0, 0, 0, 0.08);
+}
+
+.cardHead {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cardIcon {
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.cardTitle {
+  flex: 1;
+  min-width: 0;
+  padding-top: 2px;
+  font-size: var(--fs-heading);
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-primary-dark);
+}
+
+.distance {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-top: 4px;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.cardLines {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-left: 56px;
+  margin-top: -6px;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  line-height: 1.5;
+}
+
+.noResult {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--c-text-2);
+}
+
+/* Location status and "my location" control, over the map. */
+.notice {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  right: 52px;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: fit-content;
+  max-width: calc(100% - 62px);
+  padding: 6px 10px;
+  border-radius: var(--r-chip);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: var(--shadow-card);
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--c-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spin {
+  flex: none;
+  color: var(--c-primary);
+  animation: spin 1s linear infinite;
+}
+
+.locate {
+  position: absolute;
+  right: 10px;
+  /* Above the part of the map that the floating card overlaps. */
+  bottom: 40px;
+  z-index: 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.16);
+  color: var(--c-text-2);
+}
+
+.locateLive {
+  color: var(--c-primary);
+}
+
+html[data-platform='android'] .locate {
+  border-radius: 14px;
+}

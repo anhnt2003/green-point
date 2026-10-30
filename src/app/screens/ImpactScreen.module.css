@@ -1,0 +1,179 @@
+.totalCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px var(--pad) 18px;
+}
+
+.totalHead {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.totalHead > div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.totalIcon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--c-primary);
+  color: var(--c-primary);
+}
+
+.totalLabel {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--c-primary-dark);
+}
+
+.totalValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.equivTitle {
+  margin-top: 4px;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.equivRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.equiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 6px;
+  text-align: center;
+}
+
+.equiv + .equiv {
+  border-left: 1px solid var(--c-border);
+}
+
+.equivIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary-tint);
+  color: var(--c-primary-dark);
+}
+
+.equivText {
+  font-size: var(--fs-caption);
+  color: var(--c-text);
+  line-height: 1.4;
+}
+
+.rateCard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px var(--pad);
+}
+
+.rateLabel {
+  font-size: var(--fs-body);
+  font-weight: 500;
+  color: var(--c-primary-dark);
+}
+
+.rateValue {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+  margin-bottom: 4px;
+}
+
+.detailCard {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detailRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.detailText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.detailLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.detailName {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.detailKg {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.certList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.cert {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.certLocked .certIcon {
+  background: var(--c-border);
+  color: var(--c-text-2);
+}
+
+.certIcon {
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-primary-tint);
+  color: var(--c-primary);
+}
+
+.certDone {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.certTodo {
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--c-text-2);
+}

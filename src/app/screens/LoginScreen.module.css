@@ -1,0 +1,74 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 8px 24px 32px;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.title {
+  margin-top: 8px;
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.subtitle {
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+.eye {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: var(--c-text-2);
+}
+
+.error {
+  margin-top: -6px;
+  padding-left: 4px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--c-danger);
+}
+
+.demo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+  padding: 14px;
+  border-radius: var(--r-card);
+  background: var(--c-primary-tint);
+}
+
+.demoTitle {
+  font-size: var(--fs-caption);
+  color: var(--c-primary-dark);
+  font-weight: 600;
+}
+
+.demoRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demoChip {
+  height: var(--h-chip);
+  padding: 0 12px;
+  border-radius: var(--r-chip);
+  background: var(--c-surface);
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--c-primary);
+}

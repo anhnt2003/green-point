@@ -1,0 +1,66 @@
+/* Design tokens — values from design/DESIGN.md §1. Do not add colors or spacing outside this file. */
+:root {
+  /* Colors */
+  --c-primary: #218048;
+  --c-primary-dark: #0e3b25;
+  --c-primary-tint: #e6f3e8;
+  --c-primary-tint-strong: #d8ecdc;
+  --c-warm-tint: #f8ecdc;
+  --c-info-tint: #d2e7fb;
+  --c-danger: #e5383b;
+  --c-text: #1a1a1a;
+  --c-text-2: #6b7280;
+  --c-surface: #ffffff;
+  --c-bg: #f4f8f4;
+  --c-border: #e5e7eb;
+  --c-on-primary: #ffffff;
+
+  /* Typography */
+  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --fs-brand: 36px;
+  --fs-display: 32px;
+  --fs-stat: 22px;
+  --fs-title: 18px;
+  --fs-heading: 16px;
+  --fs-body: 14px;
+  --fs-caption: 12px;
+  --fs-nav: 11px;
+
+  /* Spacing */
+  --space-x: 16px;
+  --gap: 12px;
+  --pad: 16px;
+
+  /* Radius */
+  --r-card: 16px;
+  --r-card-lg: 20px;
+  --r-button: 24px;
+  --r-chip: 999px;
+  --r-image: 12px;
+
+  /* Sizes */
+  --h-button: 48px;
+  --h-chip: 32px;
+  --h-header: 52px;
+  --h-nav: 64px;
+
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  /* Platform chrome (simulated). Overridden below. */
+  --safe-top: 54px;
+  --safe-bottom: 34px;
+  --nav-label: var(--fs-nav);
+}
+
+html[data-platform='android'] {
+  --safe-top: 36px;
+  --safe-bottom: 24px;
+  --h-nav: 80px;
+  --nav-label: 12px;
+}
+
+/* Opened directly on a real phone (not inside the simulator frame). */
+html[data-frame='standalone'] {
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
