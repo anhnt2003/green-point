@@ -46,9 +46,31 @@ export function MapScreen() {
   const [query, setQuery] = useState('')
   const [pickedId, setPickedId] = useState<string | null>(null)
 
+  // Demo points seen on water (lakes, rivers) on the drawn map. Remembered, so a lake stays a lake
+  // after it scrolls out of view.
+  const [wetIds, setWetIds] = useState<ReadonlySet<string>>(() => new Set())
+
   // A real position also gets demo points around it; the default position keeps the mockup's points.
-  const points = useMemo(() => (isLive ? collectionPointsNear(location) : COLLECTION_POINTS), [isLive, location])
+  const points = useMemo(
+    () => (isLive ? collectionPointsNear(location, (p) => wetIds.has(p.id)) : COLLECTION_POINTS),
+    [isLive, location, wetIds],
+  )
   const byDistance = useMemo(() => sortByDistance(points, location), [points, location])
+
+  // Ask the drawn map which demo points landed on water, so the generator moves them.
+  // Runs when the points change and whenever the map has drawn new tiles.
+  const checkWater = useCallback(() => {
+    if (!isLive) return
+    const found: string[] = []
+    collectionPointsNear(location, (p) => {
+      if (wetIds.has(p.id)) return true
+      if (!mapRef.current?.isOnWater(p)) return false
+      found.push(p.id)
+      return true
+    })
+    if (found.length > 0) setWetIds((cur) => new Set([...cur, ...found]))
+  }, [isLive, location, wetIds])
+  useEffect(checkWater, [checkWater])
 
   // A known position at mount frames the user with the nearest points; otherwise show all points.
   const [initialView] = useState<LatLng[]>(() =>
@@ -161,6 +183,7 @@ export function MapScreen() {
           onSelect={pick}
           userLocation={location}
           userLocationLive={isLive}
+          onIdle={checkWater}
         />
         {notice && (
           <div className={styles.notice} role="status">

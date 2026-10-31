@@ -8,6 +8,8 @@ const CELL_DEG = 0.015
 const RINGS = 2
 /** No demo points this close to a seed point, so the Hanoi area stays as in the mockup. */
 const SEED_ZONE_KM = 2
+/** Positions tried per cell before leaving it empty (a cell can be all lake or river). */
+const CANDIDATES = 4
 
 const PREFIXES = ['Điểm thu gom', 'Trạm tái chế'] as const
 const NAMES = ['Xanh', 'Lá Xanh', 'Tuần Hoàn', 'Mầm Xanh', 'Phố Sạch', 'Sống Xanh', 'Đất Lành', 'Ve Chai Xanh'] as const
@@ -20,16 +22,17 @@ function hashCell(i: number, j: number, salt: number): number {
   return (h ^ (h >>> 16)) >>> 0
 }
 
-function demoPoint(i: number, j: number): CollectionPoint {
+/** Candidate `k` of cell (i, j): only the position depends on `k`. */
+function demoPoint(i: number, j: number, k: number): CollectionPoint {
   const rand = (salt: number) => hashCell(i, j, salt) / 2 ** 32
   const pick = <T>(list: readonly T[], salt: number) => list[Math.floor(rand(salt) * list.length)]
   return {
-    id: `demo-${i}-${j}`,
+    id: `demo-${i}-${j}-${k}`,
     name: `${pick(PREFIXES, 3)} ${pick(NAMES, 4)}`,
     address: 'Điểm mẫu quanh vị trí của bạn',
     // Inside the middle 80% of the cell, so neighbouring points do not pile up on a border.
-    lat: (i + 0.1 + 0.8 * rand(1)) * CELL_DEG,
-    lng: (j + 0.1 + 0.8 * rand(2)) * CELL_DEG,
+    lat: (i + 0.1 + 0.8 * rand(10 * k + 1)) * CELL_DEG,
+    lng: (j + 0.1 + 0.8 * rand(10 * k + 2)) * CELL_DEG,
     accepts: [...pick(COLLECTION_POINTS, 5).accepts],
     openHours: pick(COLLECTION_POINTS, 6).openHours,
   }
@@ -38,15 +41,19 @@ function demoPoint(i: number, j: number): CollectionPoint {
 /**
  * Seed points plus demo points around `origin`. Demo points are pinned to a world grid,
  * not to the user: GPS jitter does not move them, and new ones appear as the user travels.
+ * A demo point that `isOnWater` rejects moves to the cell's next candidate position.
  */
-export function collectionPointsNear(origin: LatLng): CollectionPoint[] {
+export function collectionPointsNear(
+  origin: LatLng,
+  isOnWater: (point: CollectionPoint) => boolean = () => false,
+): CollectionPoint[] {
   const ci = Math.floor(origin.lat / CELL_DEG)
   const cj = Math.floor(origin.lng / CELL_DEG)
   const demo: CollectionPoint[] = []
   for (let i = ci - RINGS; i <= ci + RINGS; i++) {
     for (let j = cj - RINGS; j <= cj + RINGS; j++) {
-      const point = demoPoint(i, j)
-      if (COLLECTION_POINTS.every((seed) => haversineKm(seed, point) > SEED_ZONE_KM)) demo.push(point)
+      const point = Array.from({ length: CANDIDATES }, (_, k) => demoPoint(i, j, k)).find((p) => !isOnWater(p))
+      if (point && COLLECTION_POINTS.every((seed) => haversineKm(seed, point) > SEED_ZONE_KM)) demo.push(point)
     }
   }
   return [...COLLECTION_POINTS, ...demo]

@@ -36,6 +36,14 @@ describe('collectionPointsNear', () => {
     expect(new Set(points.map((p) => p.id)).size).toBe(points.length)
   })
 
+  it('moves a point off water, and leaves out a cell that is all water', () => {
+    const dry = collectionPointsNear(DA_NANG).filter((p) => isDemo(p.id))
+    const moved = collectionPointsNear(DA_NANG, (p) => p.id.endsWith('-0')).filter((p) => isDemo(p.id))
+    expect(moved.map((p) => p.id)).toEqual(dry.map((p) => p.id.replace(/-0$/, '-1')))
+    moved.forEach((p, n) => expect(p.lat).not.toBe(dry[n].lat))
+    expect(collectionPointsNear(DA_NANG, (p) => isDemo(p.id))).toEqual(COLLECTION_POINTS)
+  })
+
   it('keeps the seed points and leaves the Hanoi seed area as in the mockup', () => {
     const points = collectionPointsNear(DEFAULT_LOCATION)
     expect(points.slice(0, COLLECTION_POINTS.length)).toEqual(COLLECTION_POINTS)

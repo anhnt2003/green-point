@@ -18,6 +18,8 @@ export interface CollectionMapHandle {
   focusPoint(point: LatLng): void
   focusUser(): void
   fitTo(points: readonly LatLng[]): void
+  /** Whether `point` lies on water drawn on the map. Unknown (false) where nothing is drawn yet. */
+  isOnWater(point: LatLng): boolean
 }
 
 interface CollectionMapProps {
@@ -29,6 +31,8 @@ interface CollectionMapProps {
   userLocation: LatLng
   /** false = fallback position: the dot is drawn grey without the pulse. */
   userLocationLive: boolean
+  /** The map has finished drawing, so `isOnWater` now sees the new tiles. */
+  onIdle?(): void
   ref?: Ref<CollectionMapHandle>
 }
 
@@ -51,6 +55,7 @@ export function CollectionMap({
   onSelect,
   userLocation,
   userLocationLive,
+  onIdle,
   ref,
 }: CollectionMapProps) {
   const containerRef = useRef<HTMLDivElement>(null)
@@ -58,14 +63,16 @@ export function CollectionMap({
   const userMarkerRef = useRef<Marker | null>(null)
   const markersRef = useRef(new Map<string, { marker: Marker; button: HTMLButtonElement }>())
   const onSelectRef = useRef(onSelect)
+  const onIdleRef = useRef(onIdle)
   const userLocationRef = useRef(userLocation)
   const initialViewRef = useRef(initialView)
   const [status, setStatus] = useState<Status>('loading')
 
   useEffect(() => {
     onSelectRef.current = onSelect
+    onIdleRef.current = onIdle
     userLocationRef.current = userLocation
-  }, [onSelect, userLocation])
+  }, [onSelect, onIdle, userLocation])
 
   useImperativeHandle(
     ref,
@@ -81,6 +88,12 @@ export function CollectionMap({
       fitTo(targets) {
         if (targets.length === 0) return
         mapRef.current?.fitBounds(boundsOf(targets), { padding: FIT_PADDING, maxZoom: FIT_MAX_ZOOM, duration: 900 })
+      },
+      isOnWater(point) {
+        const map = mapRef.current
+        if (!map) return false
+        // No layer ids: they differ between styles, while the OpenMapTiles source layer is always "water".
+        return map.queryRenderedFeatures(map.project([point.lng, point.lat])).some((f) => f.sourceLayer === 'water')
       },
     }),
     [],
@@ -126,6 +139,7 @@ export function CollectionMap({
       // does not cover the map. It stays one tap away, as OpenFreeMap/OSM require.
       container.querySelector('.maplibregl-compact-show')?.classList.remove('maplibregl-compact-show')
     })
+    map.on('idle', () => onIdleRef.current?.())
     map.on('error', (event) => {
       if (styleLoaded || usedFallback) return
       console.warn('Map style failed to load, falling back to OSM raster tiles', event.error)
