@@ -150,7 +150,7 @@ sequenceDiagram
 - **Quy tắc nghiệp vụ nằm trong hàm thuần** ở `src/app/store/reducers.ts`: tạo giao dịch, xác nhận theo số cân, từ chối, đổi quà, hồ sơ vay vốn. Màn hình chỉ gọi action của store, nên có thể thay localStorage bằng API mà không phải sửa giao diện.
 - **Giao diện theo nền tảng** dựa vào thuộc tính `data-platform` trên thẻ `html`. CSS lo phần hiển thị, `usePlatform()` lo phần hành vi như icon, dialog và hiệu ứng chuyển trang.
 - **Bản đồ và bộ giải mã QR được tải khi cần.** MapLibre khoảng 1 MB chỉ tải khi mở bản đồ. jsQR chỉ tải khi trình duyệt không có BarcodeDetector.
-- **Vị trí người dùng** lấy từ GPS và cập nhật liên tục. Khi bị từ chối quyền hoặc không có tín hiệu, app dùng vị trí mặc định gần ĐH Bách Khoa Hà Nội và báo rõ trên bản đồ.
+- **Vị trí người dùng** lấy từ GPS và cập nhật liên tục. Khi bị từ chối quyền hoặc không có tín hiệu, app dùng vị trí mặc định gần ĐH Bách Khoa Hà Nội và báo rõ trên bản đồ. Ngoài 6 điểm mẫu ở Hà Nội, app sinh điểm thu gom mẫu cố định theo ô lưới quanh vị trí thật, nên đi đâu cũng có điểm gần nhất. Đi xa hơn 500 m thì bản đồ căn lại.
 
 ## Kiểm thử
 

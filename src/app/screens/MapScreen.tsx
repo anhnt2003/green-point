@@ -3,9 +3,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { FilterChips, type ChipOption } from '@/app/components/FilterChips'
+import { collectionPointsNear } from '@/app/data/nearbyPoints'
 import { CATEGORY_LABEL, COLLECTION_POINTS } from '@/app/data/seed'
 import { formatDistanceKm, normalizeSearch } from '@/app/domain/format'
-import { sortByDistance, type LatLng } from '@/app/domain/geo'
+import { haversineKm, sortByDistance, type LatLng } from '@/app/domain/geo'
 import type { WasteCategory } from '@/app/domain/types'
 import { toast } from '@/app/feedback/useFeedback'
 import { AppHeader, HeaderAction } from '@/app/layout/AppHeader'
@@ -23,8 +24,10 @@ const FILTERS: readonly ChipOption<Filter>[] = [
   { value: 'metal', label: 'Kim loại' },
 ]
 
-/** How many nearest points the first real fix frames together with the user. */
+/** How many nearest points are framed together with the user. */
 const NEAREST_IN_VIEW = 3
+/** Moving this far from where the map was last framed frames it again. */
+const REFRAME_KM = 0.5
 
 const FALLBACK_NOTICE: Partial<Record<LocationStatus, string>> = {
   locating: 'Đang xác định vị trí…',
@@ -43,18 +46,24 @@ export function MapScreen() {
   const [query, setQuery] = useState('')
   const [pickedId, setPickedId] = useState<string | null>(null)
 
-  const byDistance = useMemo(() => sortByDistance(COLLECTION_POINTS, location), [location])
+  // A real position also gets demo points around it; the default position keeps the mockup's points.
+  const points = useMemo(() => (isLive ? collectionPointsNear(location) : COLLECTION_POINTS), [isLive, location])
+  const byDistance = useMemo(() => sortByDistance(points, location), [points, location])
 
   // A known position at mount frames the user with the nearest points; otherwise show all points.
   const [initialView] = useState<LatLng[]>(() =>
     isLive ? [location, ...byDistance.slice(0, NEAREST_IN_VIEW)] : [location, ...COLLECTION_POINTS],
   )
 
-  // When the first real fix arrives, bring the user and the nearest points into view once.
-  const framedRef = useRef(isLive)
+  // On the first real fix, and again whenever the user has moved far enough, bring the user and
+  // the nearest points into view and let the card follow the nearest point again.
+  const framedAtRef = useRef<LatLng | null>(isLive ? location : null)
   useEffect(() => {
-    if (!isLive || framedRef.current) return
-    framedRef.current = true
+    if (!isLive) return
+    const framedAt = framedAtRef.current
+    if (framedAt && haversineKm(framedAt, location) < REFRAME_KM) return
+    framedAtRef.current = location
+    setPickedId(null)
     mapRef.current?.fitTo([location, ...byDistance.slice(0, NEAREST_IN_VIEW)])
   }, [isLive, location, byDistance])
 
@@ -73,10 +82,10 @@ export function MapScreen() {
   const pick = useCallback(
     (id: string) => {
       setPickedId(id)
-      const point = COLLECTION_POINTS.find((p) => p.id === id)
+      const point = byDistance.find((p) => p.id === id)
       if (point) mapRef.current?.focusPoint(point)
     },
-    [],
+    [byDistance],
   )
 
   const locateMe = () => {

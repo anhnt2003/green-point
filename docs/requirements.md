@@ -115,5 +115,5 @@ Cập nhật lần cuối: 2026-10-30.
 | Q-07 | Giữ số dư 245 theo mockup. "Số lần giao dịch" đếm các giao dịch đã xác nhận, gồm cả đổi rác và đổi quà. |
 | Q-08 | Tab thứ 3 của Business là "Tài chính" (GreenCapital). "Báo cáo" là ô trong Quản lý kho. |
 | Q-09 | Đăng nhập mock: `citizen` và `business`, cùng mật khẩu `GreenPoint@2026`. Không dùng mật khẩu phổ biến như `123456` vì Chrome cảnh báo lộ mật khẩu bằng hộp thoại chặn cả tab sau khi đăng nhập. |
-| F-03 | Vị trí người dùng lấy từ GPS của thiết bị. Không có quyền hoặc không có tín hiệu thì dùng vị trí mặc định gần ĐH Bách Khoa và báo trên bản đồ. Điểm thu gom mẫu giữ nguyên ở Hà Nội. |
+| F-03 | Vị trí người dùng lấy từ GPS của thiết bị. Không có quyền hoặc không có tín hiệu thì dùng vị trí mặc định gần ĐH Bách Khoa và báo trên bản đồ. 6 điểm thu gom mẫu ở Hà Nội giữ nguyên (nhân viên gắn với Green-House). Khi có vị trí thật, app sinh thêm điểm mẫu quanh người dùng, cố định theo ô lưới khoảng 1,6 km, không sinh trong bán kính 2 km quanh điểm mẫu Hà Nội. Địa chỉ của các điểm này là mẫu. Đi xa hơn 500 m so với lần căn khung trước thì bản đồ căn lại vào người dùng và 3 điểm gần nhất. |
 | F-07 | Quét QR bằng camera sau của thiết bị, dùng BarcodeDetector nếu trình duyệt hỗ trợ, nếu không thì dùng thư viện jsQR. Luôn có ô nhập mã tay. Không có máy chủ nên chỉ quét được giao dịch tạo trên cùng trình duyệt. |
