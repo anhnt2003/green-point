@@ -1,0 +1,360 @@
+/* Tồn kho, Báo cáo, Chi phí, Hồ sơ vay vốn. */
+
+.section {
+  padding-top: 8px;
+}
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px var(--pad);
+}
+
+.heroLabel {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.heroValue {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  color: var(--c-primary-dark);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--r-card);
+  background: var(--c-surface);
+  box-shadow: var(--shadow-card);
+}
+
+.rowText {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rowTitle {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.rowValue {
+  flex: none;
+  font-size: var(--fs-heading);
+  color: var(--c-primary-dark);
+}
+
+.rowButton {
+  display: block;
+  width: 100%;
+  border-radius: var(--r-card);
+  text-align: left;
+}
+
+.emptyLine {
+  padding: 4px 4px 12px;
+}
+
+/* Label/value lines inside a card. */
+.lines {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.line {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: var(--fs-body);
+}
+
+.line strong {
+  color: var(--c-primary-dark);
+  text-align: right;
+}
+
+.lineSub {
+  padding-left: 12px;
+  color: var(--c-text-2);
+}
+
+.lineTotal {
+  padding-top: 10px;
+  border-top: 1px solid var(--c-border);
+}
+
+.lineTotal strong {
+  font-size: var(--fs-heading);
+}
+
+.negative strong {
+  color: var(--c-danger);
+}
+
+/* ---------- Forms ---------- */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+}
+
+.error {
+  margin-top: -4px;
+  padding-left: 4px;
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  color: var(--c-danger);
+}
+
+.textButton {
+  align-self: flex-start;
+  padding: 4px;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: var(--c-primary);
+}
+
+.total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px var(--pad);
+}
+
+.totalValue {
+  font-size: var(--fs-display);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.unit {
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+/* ---------- Report share bars ---------- */
+.share {
+  display: grid;
+  grid-template-columns: 36px 1fr auto;
+  align-items: center;
+  gap: 4px 12px;
+}
+
+.share > :nth-child(2) {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* ---------- Daily intake chart ---------- */
+.chartCard {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.chartTitle {
+  font-size: var(--fs-body);
+  font-weight: 600;
+  color: var(--c-primary-dark);
+}
+
+.plot {
+  position: relative;
+  height: 148px;
+  margin-top: 26px;
+  border-top: 1px dashed var(--c-border);
+  border-bottom: 1px solid #c9d2cc;
+}
+
+.axisMax {
+  position: absolute;
+  top: -20px;
+  left: 0;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.bars {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+}
+
+/* The whole column is the hit target, bigger than the bar. */
+.slot {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  border-radius: 4px 4px 0 0;
+}
+
+.slot:focus-visible {
+  outline: 2px solid var(--c-primary);
+  outline-offset: 1px;
+}
+
+.bar {
+  width: 100%;
+  max-width: 24px;
+  border-radius: 4px 4px 0 0;
+  background: var(--c-primary);
+}
+
+.slotActive .bar {
+  background: var(--c-primary-dark);
+}
+
+.barLabel {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-text);
+  white-space: nowrap;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--c-surface);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.14);
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.tooltip strong {
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}
+
+.tooltipStart {
+  left: 0;
+  transform: none;
+}
+
+.tooltipEnd {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.axisDays {
+  display: flex;
+  justify-content: space-between;
+  font-size: var(--fs-caption);
+  color: var(--c-text-2);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fs-caption);
+}
+
+.table th,
+.table td {
+  padding: 4px 0;
+  text-align: left;
+  border-bottom: 1px solid var(--c-border);
+}
+
+.table td:last-child,
+.table th:last-child {
+  text-align: right;
+}
+
+/* ---------- Loan application ---------- */
+.steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: var(--fs-body);
+  color: var(--c-text-2);
+}
+
+.stepDot {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--c-border);
+  color: var(--c-text-2);
+}
+
+.stepDone .stepDot {
+  background: var(--c-primary);
+  color: var(--c-on-primary);
+}
+
+.stepCurrent .stepDot {
+  background: var(--c-warm-tint);
+  color: #9a5b13;
+}
+
+.stepDone,
+.stepCurrent {
+  color: var(--c-text);
+}
+
+.stepText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.purposeList {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: var(--fs-body);
+  color: var(--c-text);
+}

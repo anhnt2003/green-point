@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { formatDateTime, formatDistanceKm, formatKg, formatMillions, formatPoints, normalizeSearch } from './format'
+import { formatDateTime, formatDistanceKm, formatKg, formatMillions, formatPoints, formatVnd, normalizeSearch, parseVnd } from './format'
 
 describe('format', () => {
   it('formats weights like the mockup', () => {
@@ -42,5 +42,15 @@ describe('format', () => {
   it('strips Vietnamese diacritics for search', () => {
     expect(normalizeSearch('Lê Thanh Nghị')).toBe('le thanh nghi')
     expect(normalizeSearch('Đại Cồ Việt')).toBe('dai co viet')
+  })
+
+  it('formats and parses money in VND', () => {
+    expect(formatVnd(150_000)).toBe('150.000 đ')
+    expect(formatVnd(-4_500)).toBe('-4.500 đ')
+    expect(parseVnd('150.000')).toBe(150_000)
+    expect(parseVnd(' 2,500,000 đ')).toBe(2_500_000)
+    expect(parseVnd('')).toBeNull()
+    expect(parseVnd('12a')).toBeNull()
+    expect(formatMillions(-1_250_000)).toBe('-1.3 triệu')
   })
 })

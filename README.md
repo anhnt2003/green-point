@@ -30,14 +30,17 @@
 - **GreenMap:** bản đồ điểm thu gom theo vị trí thật của thiết bị, lọc theo loại rác, tìm theo tên hoặc khu vực, chỉ đường bằng Google Maps.
 - **Hướng dẫn phân loại:** loại nào được nhận, loại nào không, cách chuẩn bị trước khi mang đến, và nơi bỏ những thứ điểm thu gom không nhận.
 - **Đổi rác lấy điểm:** khai loại rác và khối lượng, xem điểm dự kiến, nhận mã QR để đưa cho nhân viên.
-- **GreenRewards:** đổi điểm lấy quà, chặn khi không đủ điểm.
+- **GreenRewards:** đổi điểm lấy quà, chặn khi không đủ điểm. Quà đã đổi có mã nhận quà hoặc mã voucher kèm QR, xem lại trong **Quà của tôi**.
+- **Thông báo:** nút chuông ở Trang chủ báo khi giao dịch được xác nhận hoặc bị từ chối và khi đổi quà, có chấm đỏ cho thông báo chưa đọc.
 - **GreenImpact và Lịch sử:** khối lượng đã bàn giao, quy đổi tương đương, chứng nhận theo mốc, lịch sử cộng và trừ điểm.
 
 **Điểm thu gom**
 
-- **GreenBusiness:** tổng khối lượng, đơn hàng hôm nay, doanh thu ước tính.
+- **GreenBusiness:** tổng khối lượng, đơn hàng hôm nay, doanh thu ước tính, tính từ sổ kho của điểm thu gom.
+- **Tồn kho:** lượng rác còn trong kho theo từng loại, nhập và xuất gần đây, bán cho đơn vị tái chế.
+- **Báo cáo và Chi phí:** khối lượng nhận theo ngày (7 hoặc 30 ngày), doanh thu bán phế liệu, chi phí điểm thưởng và chi phí vận hành, lợi nhuận. Thêm chi phí vận hành bằng tay.
 - **Quét mã nhận rác:** quét QR bằng camera hoặc nhập mã, nhập số cân thực tế, xác nhận để cộng điểm hoặc từ chối kèm lý do.
-- **GreenCapital:** chọn nhu cầu vốn và tạo hồ sơ kết nối ngân hàng.
+- **GreenCapital:** chọn nhu cầu vốn và tạo hồ sơ kết nối ngân hàng. Hồ sơ kèm báo cáo hoạt động 30 ngày và xem lại được.
 
 **Simulator**
 
@@ -162,8 +165,10 @@ Unit test bao phủ các quy tắc nghiệp vụ trong `docs/requirements.md`:
 
 - **Tính điểm:** theo từng loại rác, bước 0,5 kg, đọc số cân `2,4` hay `2.4`.
 - **Giao dịch:** chờ xác nhận, xác nhận theo số cân thực tế, chỉ cộng một lần, từ chối, nhân viên chỉ xử lý giao dịch của điểm mình.
-- **Đổi quà:** chặn khi không đủ điểm.
-- **Phụ trợ:** định dạng số, ngày, khoảng cách; sắp xếp điểm thu gom theo vị trí; đọc mã QR.
+- **Đổi quà:** chặn khi không đủ điểm, mã nhận quà và voucher, đánh dấu đã dùng.
+- **Sổ kho:** tồn kho, bán không vượt tồn, chi phí, số liệu dashboard và báo cáo, báo cáo đính kèm hồ sơ vay.
+- **Thông báo:** suy ra từ giao dịch, đếm thông báo chưa đọc.
+- **Phụ trợ:** định dạng số, ngày, khoảng cách, tiền; sắp xếp điểm thu gom theo vị trí; đọc mã QR; nâng cấp dữ liệu đã lưu.
 
 Workflow deploy chạy lint và test trước khi build. Lỗi ở một trong hai bước thì không deploy.
 
@@ -185,7 +190,8 @@ BASE_PATH=/green-point/ npm run preview   # http://localhost:4173/green-point/
 - **Chưa có máy chủ.** Dữ liệu nằm trong trình duyệt đang dùng. Nhân viên chỉ quét được giao dịch tạo trên cùng trình duyệt, nên trong simulator hãy chuyển tài khoản bằng thanh công cụ.
 - **Đăng nhập là giả lập.** Tài khoản và mật khẩu demo nằm trong mã nguồn, không dùng cho dữ liệu thật.
 - **Camera và GPS cần https hoặc localhost.** Mở app trên điện thoại qua địa chỉ LAN dạng `http://192.168…` sẽ không dùng được hai tính năng này. Bản trên GitHub Pages dùng được.
-- **Chưa có:** chi phí trong GreenBusiness, màn Tồn kho và Báo cáo, hạn dùng của mã QR, đăng ký tài khoản.
+- **Số liệu kinh doanh là mẫu.** Lịch sử 60 ngày của Green-House được sinh theo ngày mở app lần đầu. Giá bán phế liệu và giá trị 1 điểm (100 đ) là giả định.
+- **Chưa có:** hạn dùng của mã QR, nhân viên quét mã nhận quà, đăng ký tài khoản.
 
 ## Tài liệu liên quan
 

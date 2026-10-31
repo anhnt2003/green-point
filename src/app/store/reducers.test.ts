@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { ACCOUNTS, DEMO_PASSWORD, REWARDS, WASTE_TYPES, createSeedState } from '@/app/data/seed'
+import { stockByType } from '@/app/domain/business'
 import type { DataState } from '@/app/domain/types'
 import * as r from './reducers'
 
@@ -114,7 +115,11 @@ describe('staff confirmation (F-07, BR-04)', () => {
     })
     expect(res.state.users[CITIZEN].pointBalance).toBe(294)
     expect(res.state.users[CITIZEN].weightByType).toEqual({ paper: 6.9, pet: 3.5, aluminum: 2 })
-    expect(res.state.users[STAFF].business).toMatchObject({ ordersToday: 16, totalWeightKg: 1253.9 })
+    expect(res.state.stockMoves.slice(0, 3)).toEqual([
+      { id: 'in-GP256789-paper', pointId: 'green-house', kind: 'in', code: 'paper', kg: 2.4, at: NOW, orderId: 'GP256789', points: 24 },
+      { id: 'in-GP256789-pet', pointId: 'green-house', kind: 'in', code: 'pet', kg: 1, at: NOW, orderId: 'GP256789', points: 15 },
+      { id: 'in-GP256789-aluminum', pointId: 'green-house', kind: 'in', code: 'aluminum', kg: 0.5, at: NOW, orderId: 'GP256789', points: 10 },
+    ])
   })
 
   it('drops waste types the staff weighed at 0 kg', () => {
@@ -149,13 +154,13 @@ describe('staff confirmation (F-07, BR-04)', () => {
     expect(confirm(withOther, ACTUAL, 'u-other')).toEqual({ ok: false, error: 'OTHER_POINT' })
   })
 
-  it('rejects with a reason: no points, no stats, cannot be confirmed later', () => {
+  it('rejects with a reason: no points, no stock, cannot be confirmed later', () => {
     const res = r.rejectRecycle(pending(), { code: 'GP256789', staffUserId: STAFF, reason: 'Rác bẩn hoặc ướt', now: NOW })
     expect(res.ok).toBe(true)
     if (!res.ok) return
     expect(res.transaction).toMatchObject({ status: 'rejected', points: 0, estimatedPoints: 45, rejectReason: 'Rác bẩn hoặc ướt' })
     expect(res.state.users[CITIZEN].pointBalance).toBe(245)
-    expect(res.state.users[STAFF].business).toMatchObject({ ordersToday: 15, totalWeightKg: 1250 })
+    expect(res.state.stockMoves).toEqual(seed.stockMoves)
     expect(confirm(res.state)).toEqual({ ok: false, error: 'NOT_PENDING' })
   })
 })
@@ -175,10 +180,74 @@ describe('redeem (BR-05)', () => {
     expect(res.state.transactions[0]).toMatchObject({ type: 'redeem', points: -100, rewardId: 'canvas-bag' })
   })
 
+  it('gives a pickup code for a gift and a voucher code for a voucher', () => {
+    const gift = r.redeemReward(seed, { userId: CITIZEN, reward: reward('canvas-bag'), now: NOW })
+    if (!gift.ok) throw new Error('redeem failed')
+    expect(gift.transaction.rewardCode).toBe('GQ100003')
+    const voucher = r.redeemReward(gift.state, { userId: CITIZEN, reward: reward('canvas-bag'), now: NOW })
+    expect(voucher.ok && voucher.transaction.rewardCode).toBe('GQ100004')
+    const rich = { ...seed, users: { ...seed.users, [CITIZEN]: { ...seed.users[CITIZEN], pointBalance: 500 } } }
+    const hl = r.redeemReward(rich, { userId: CITIZEN, reward: reward('highlands-voucher'), now: NOW })
+    expect(hl.ok && hl.transaction.rewardCode).toBe('GV100003')
+  })
+
+  it('marks a reward used once', () => {
+    const res = r.redeemReward(seed, { userId: CITIZEN, reward: reward('canvas-bag'), now: NOW })
+    if (!res.ok) throw new Error('redeem failed')
+    const input = { userId: CITIZEN, transactionId: res.transaction.id, now: NOW }
+    const used = r.markRewardUsed(res.state, input)
+    expect(used.ok && used.state.transactions[0].usedAt).toBe(NOW)
+    expect(used.ok && r.markRewardUsed(used.state, input)).toEqual({ ok: false, error: 'ALREADY_USED' })
+    expect(r.markRewardUsed(res.state, { ...input, userId: 'u-greenhouse' })).toEqual({ ok: false, error: 'NOT_FOUND' })
+  })
+
   it('allows redeeming exactly the full balance', () => {
     const state = { ...seed, users: { ...seed.users, [CITIZEN]: { ...seed.users[CITIZEN], pointBalance: 150 } } }
     const res = r.redeemReward(state, { userId: CITIZEN, reward: reward('highlands-voucher'), now: NOW })
     expect(res.ok && res.state.users[CITIZEN].pointBalance).toBe(0)
+  })
+})
+
+describe('notifications', () => {
+  it('remembers when the citizen last opened them', () => {
+    const state = r.markNotificationsSeen(seed, { userId: CITIZEN, now: NOW })
+    expect(state.users[CITIZEN].notificationsSeenAt).toBe(NOW)
+  })
+})
+
+describe('stock and costs of the collection point (F-11, F-12)', () => {
+  const STAFF = 'u-greenhouse'
+  const stockOf = (state: DataState) => stockByType(state.stockMoves.filter((m) => m.pointId === 'green-house'))
+  const sell = (state: DataState, kg: number, priceVndPerKg = 5_000) =>
+    r.sellStock(state, { staffUserId: STAFF, code: 'paper', kg, priceVndPerKg, buyer: 'Đối tác tái chế giấy', now: NOW })
+
+  it('sells from stock to a recycler', () => {
+    const before = stockOf(seed).paper
+    const res = sell(seed, 10)
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(stockOf(res.state).paper).toBeCloseTo(before - 10, 5)
+    expect(res.state.stockMoves[0]).toMatchObject({ kind: 'out', code: 'paper', kg: 10, priceVndPerKg: 5_000, at: NOW })
+  })
+
+  it('cannot sell more than the stock, nothing, or for free', () => {
+    expect(sell(seed, stockOf(seed).paper + 0.1)).toEqual({ ok: false, error: 'NOT_ENOUGH_STOCK' })
+    expect(sell(seed, 0)).toEqual({ ok: false, error: 'INVALID' })
+    expect(sell(seed, 1, 0)).toEqual({ ok: false, error: 'INVALID' })
+  })
+
+  it('only staff of a collection point can sell or add costs', () => {
+    expect(r.sellStock(seed, { staffUserId: CITIZEN, code: 'paper', kg: 1, priceVndPerKg: 1, buyer: 'x', now: NOW }))
+      .toEqual({ ok: false, error: 'NO_POINT' })
+    expect(r.addExpense(seed, { staffUserId: CITIZEN, category: 'other', amountVnd: 1, note: '', now: NOW }))
+      .toEqual({ ok: false, error: 'NO_POINT' })
+  })
+
+  it('records an operating cost', () => {
+    const res = r.addExpense(seed, { staffUserId: STAFF, category: 'transport', amountVnd: 250_000, note: ' Xăng xe ', now: NOW })
+    expect(res.ok && res.state.expenses[0]).toMatchObject({ pointId: 'green-house', category: 'transport', amountVnd: 250_000, note: 'Xăng xe' })
+    expect(r.addExpense(seed, { staffUserId: STAFF, category: 'transport', amountVnd: 0, note: '', now: NOW }))
+      .toEqual({ ok: false, error: 'INVALID' })
   })
 })
 
@@ -190,9 +259,20 @@ describe('loan application', () => {
     })
   })
 
-  it('records the selected purposes', () => {
-    const res = r.createLoanApplication(seed, { userId: 'u-greenhouse', purposes: ['vehicle', 'technology'], now: NOW })
-    expect(res.ok && res.state.loanApplications[0].purposes).toEqual(['vehicle', 'technology'])
+  it('records the selected purposes with a report of the last 30 days', () => {
+    const state = createSeedState(new Date(NOW))
+    const res = r.createLoanApplication(state, { userId: 'u-greenhouse', purposes: ['vehicle', 'technology'], now: NOW })
+    expect(res.ok).toBe(true)
+    if (!res.ok) return
+    expect(res.state.loanApplications[0]).toMatchObject({ purposes: ['vehicle', 'technology'], status: 'submitted' })
+    expect(res.application.report).toMatchObject({ periodDays: 30, intakeKg: 660, monthOverMonthPct: 12 })
+  })
+
+  it('is for collection points only', () => {
+    expect(r.createLoanApplication(seed, { userId: CITIZEN, purposes: ['vehicle'], now: NOW })).toEqual({
+      ok: false,
+      error: 'NO_POINT',
+    })
   })
 })
 

@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { ACCOUNTS, DEFAULT_COLLECTION_POINT_ID, WASTE_TYPES, createSeedState } from '@/app/data/seed'
-import type { DataState, LoanPurpose, Reward, Role, WasteItem } from '@/app/domain/types'
+import type { DataState, ExpenseCategory, LoanPurpose, Reward, Role, WasteCode, WasteItem } from '@/app/domain/types'
 import { DATA_VERSION, migrateData } from './migrations'
 import * as reducers from './reducers'
 
@@ -15,8 +15,13 @@ interface Actions {
   /** Staff of the logged-in collection point weighs and confirms (F-07). */
   confirmRecycle(code: string, actualItems: WasteItem[]): { ok: true; points: number } | { ok: false; error: string }
   rejectRecycle(code: string, reason: string): { ok: true } | { ok: false; error: string }
-  redeem(reward: Reward): { ok: true } | { ok: false; error: 'INSUFFICIENT_POINTS' | 'UNKNOWN_USER' | 'NO_SESSION' }
-  createLoanApplication(purposes: LoanPurpose[]): { ok: true } | { ok: false; error: string }
+  redeem(reward: Reward): { ok: true; transactionId: string } | { ok: false; error: 'INSUFFICIENT_POINTS' | 'UNKNOWN_USER' | 'NO_SESSION' }
+  markRewardUsed(transactionId: string): void
+  markNotificationsSeen(): void
+  /** Staff of the logged-in collection point. */
+  sellStock(input: { code: WasteCode; kg: number; priceVndPerKg: number; buyer: string }): { ok: true } | { ok: false; error: string }
+  addExpense(input: { category: ExpenseCategory; amountVnd: number; note: string }): { ok: true } | { ok: false; error: string }
+  createLoanApplication(purposes: LoanPurpose[]): { ok: true; id: string } | { ok: false; error: string }
   reset(): void
 }
 
@@ -28,9 +33,10 @@ export const useStore = create<Store>()(
   persist(
     (set, get) => {
       const data = (): DataState => {
-        const { session, users, transactions, loanApplications, codeSeq } = get()
-        return { session, users, transactions, loanApplications, codeSeq }
+        const { session, users, transactions, loanApplications, stockMoves, expenses, codeSeq } = get()
+        return { session, users, transactions, loanApplications, stockMoves, expenses, codeSeq }
       }
+      const userId = () => get().session?.userId
 
       return {
         ...createSeedState(),
@@ -88,6 +94,36 @@ export const useStore = create<Store>()(
           const res = reducers.redeemReward(data(), { userId, reward, now: nowIso() })
           if (!res.ok) return res
           set(res.state)
+          return { ok: true, transactionId: res.transaction.id }
+        },
+
+        markRewardUsed(transactionId) {
+          const id = userId()
+          if (!id) return
+          const res = reducers.markRewardUsed(data(), { userId: id, transactionId, now: nowIso() })
+          if (res.ok) set(res.state)
+        },
+
+        markNotificationsSeen() {
+          const id = userId()
+          if (id) set(reducers.markNotificationsSeen(data(), { userId: id, now: nowIso() }))
+        },
+
+        sellStock(input) {
+          const staffUserId = userId()
+          if (!staffUserId) return { ok: false, error: 'NO_SESSION' }
+          const res = reducers.sellStock(data(), { ...input, staffUserId, now: nowIso() })
+          if (!res.ok) return res
+          set(res.state)
+          return { ok: true }
+        },
+
+        addExpense(input) {
+          const staffUserId = userId()
+          if (!staffUserId) return { ok: false, error: 'NO_SESSION' }
+          const res = reducers.addExpense(data(), { ...input, staffUserId, now: nowIso() })
+          if (!res.ok) return res
+          set(res.state)
           return { ok: true }
         },
 
@@ -97,7 +133,7 @@ export const useStore = create<Store>()(
           const res = reducers.createLoanApplication(data(), { userId, purposes, now: nowIso() })
           if (!res.ok) return res
           set(res.state)
-          return { ok: true }
+          return { ok: true, id: res.application.id }
         },
 
         reset() {
@@ -110,11 +146,13 @@ export const useStore = create<Store>()(
       version: DATA_VERSION,
       migrate: (persisted, version) => migrateData(persisted, version) as unknown as Store,
       storage: createJSONStorage(() => localStorage),
-      partialize: ({ session, users, transactions, loanApplications, codeSeq }) => ({
+      partialize: ({ session, users, transactions, loanApplications, stockMoves, expenses, codeSeq }) => ({
         session,
         users,
         transactions,
         loanApplications,
+        stockMoves,
+        expenses,
         codeSeq,
       }),
     },

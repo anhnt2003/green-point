@@ -1,4 +1,4 @@
-import { BookOpen, ChevronRight, Gift, Leaf, LogOut, type LucideIcon } from 'lucide-react'
+import { Bell, BookOpen, ChevronRight, Gift, Leaf, LogOut, Ticket, type LucideIcon } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { Card } from '@/app/components/Card'
@@ -24,7 +24,7 @@ export async function confirmLogout(logout: () => void) {
   if (choice === 'logout') logout()
 }
 
-/** Citizen "Cá nhân" tab — not in the mockup; minimal screen with logout. */
+/** Citizen "Cá nhân" tab — not in the mockup: summary, shortcuts and logout. */
 export function ProfileScreen() {
   const navigate = useNavigate()
   const user = useCurrentUser()
@@ -35,6 +35,8 @@ export function ProfileScreen() {
     { label: 'Tác động của bạn', to: '/impact', Icon: Leaf },
     { label: 'Lịch sử giao dịch', to: '/history', Icon: HistoryIcon },
     { label: 'Đổi quà', to: '/rewards', Icon: Gift },
+    { label: 'Quà của tôi', to: '/my-rewards', Icon: Ticket },
+    { label: 'Thông báo', to: '/notifications', Icon: Bell },
     { label: 'Hướng dẫn phân loại rác', to: '/guide', Icon: BookOpen },
   ]
 

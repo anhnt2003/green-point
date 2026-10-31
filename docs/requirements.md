@@ -73,7 +73,7 @@ App có 2 vai trò giao diện: **Citizen app** (màn 01–08) và **Business ap
 | F-09 | GreenImpact | Tổng kg, quy đổi tương đương, tỷ lệ có xác nhận tiếp nhận; tab Tổng quan / Chi tiết / Chứng nhận | 07 | [TL + MU] |
 | F-10 | GreenImpact | Lịch sử giao dịch, lọc Tất cả / Đổi rác / Đổi quà | 08 | [TL + MU] |
 | F-11 | GreenBusiness | Tổng kg thu gom (so tháng trước), đơn hôm nay, doanh thu ước tính, Quản lý kho (Tồn kho / Đơn hàng / Báo cáo) | 09 | [TL + MU] |
-| F-12 | GreenBusiness | Chi phí, lịch sử giao nhận | Lịch sử giao nhận ở tab Quản lý; chi phí chưa có màn | [TL] |
+| F-12 | GreenBusiness | Chi phí, lịch sử giao nhận | Lịch sử giao nhận ở tab Quản lý; Chi phí mở từ Báo cáo | [TL] |
 | F-13 | GreenCapital | Chọn mục đích vay, tạo hồ sơ vay vốn, disclaimer | 10 | [TL + MU] |
 
 ## 6. Thực thể dữ liệu (nháp, chỉ gồm trường thấy trong mockup)
@@ -104,7 +104,7 @@ App có 2 vai trò giao diện: **Citizen app** (màn 01–08) và **Business ap
 
 ## 8. Quyết định cho bản simulator web
 
-Cập nhật lần cuối: 2026-10-30.
+Cập nhật lần cuối: 2026-10-31.
 
 | Câu hỏi | Quyết định |
 |---|---|
@@ -116,4 +116,8 @@ Cập nhật lần cuối: 2026-10-30.
 | Q-08 | Tab thứ 3 của Business là "Tài chính" (GreenCapital). "Báo cáo" là ô trong Quản lý kho. |
 | Q-09 | Đăng nhập mock: `citizen` và `business`, cùng mật khẩu `GreenPoint@2026`. Không dùng mật khẩu phổ biến như `123456` vì Chrome cảnh báo lộ mật khẩu bằng hộp thoại chặn cả tab sau khi đăng nhập. |
 | F-03 | Vị trí người dùng lấy từ GPS của thiết bị. Không có quyền hoặc không có tín hiệu thì dùng vị trí mặc định gần ĐH Bách Khoa và báo trên bản đồ. 6 điểm thu gom mẫu ở Hà Nội giữ nguyên (nhân viên gắn với Green-House). Khi có vị trí thật, app sinh thêm điểm mẫu quanh người dùng, cố định theo ô lưới khoảng 1,6 km, không sinh trong bán kính 2 km quanh điểm mẫu Hà Nội. Địa chỉ của các điểm này là mẫu. Đi xa hơn 500 m so với lần căn khung trước thì bản đồ căn lại vào người dùng và 3 điểm gần nhất. |
+| Q-05, F-11, F-12 | Mỗi điểm thu gom có **sổ kho**: dòng nhập khi nhân viên cân và xác nhận, dòng xuất khi bán cho đơn vị tái chế. Tồn kho = nhập − xuất. Dashboard tính từ sổ kho: tổng khối lượng là toàn bộ lượng đã nhận; "so với tháng trước" so 30 ngày gần nhất với 30 ngày trước đó; đơn hôm nay đếm lượt nhận từ 0 giờ; doanh thu ước tính = khối lượng nhận 30 ngày × giá bán phế liệu (giấy 5.000, nhựa PET 10.000, lon nhôm 35.000 đ/kg). Báo cáo: doanh thu là tiền bán thực tế; chi phí gồm điểm thưởng đã cộng (1 điểm = 100 đ, tính tự động) và chi phí vận hành nhập tay (vận chuyển, nhân công, điện nước và mặt bằng, khác). Dữ liệu mẫu: 60 ngày gần nhất của Green-House, sinh theo ngày mở app, khớp số trên mockup lúc mở lần đầu. |
+| Q-09 (quà) | Đổi quà sinh mã: `GV…` cho voucher đối tác, dùng tại đối tác; `GQ…` cho vật phẩm và cây xanh, nhận tại điểm thu gom Green-House. Người dân tự đánh dấu đã dùng hoặc đã nhận. Nhân viên chưa quét được mã nhận quà. |
+| Thông báo | Suy ra từ giao dịch của người dân: đã xác nhận, bị từ chối, đổi quà. Chấm đỏ trên chuông khi có thông báo mới hơn lần mở trước. |
+| GreenCapital | Hồ sơ vay lưu kèm báo cáo hoạt động 30 ngày lúc tạo: khối lượng theo loại, tăng trưởng, lượt nhận, tồn kho, doanh thu, chi phí, lợi nhuận. Trạng thái dừng ở "chờ thẩm định" vì chưa có phía ngân hàng. |
 | F-07 | Quét QR bằng camera sau của thiết bị, dùng BarcodeDetector nếu trình duyệt hỗ trợ, nếu không thì dùng thư viện jsQR. Luôn có ô nhập mã tay. Không có máy chủ nên chỉ quét được giao dịch tạo trên cùng trình duyệt. |

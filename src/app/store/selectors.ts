@@ -1,6 +1,10 @@
+import { useMemo } from 'react'
 import { useShallow } from 'zustand/react/shallow'
+import { REWARDS } from '@/app/data/seed'
+import { businessStats } from '@/app/domain/business'
+import { countUnread, notificationsFor } from '@/app/domain/notifications'
 import { impactEquivalents, sumWeights } from '@/app/domain/points'
-import type { Transaction, User } from '@/app/domain/types'
+import type { Expense, StockMove, Transaction, User } from '@/app/domain/types'
 import { useStore } from './useStore'
 
 export function useCurrentUser(): User | null {
@@ -46,4 +50,47 @@ export function usePointTransactions(status: 'pending' | 'handled'): Transaction
 
 export function useUser(id: string | undefined): User | undefined {
   return useStore((s) => (id ? s.users[id] : undefined))
+}
+
+/** Rewards the citizen redeemed, newest first. */
+export function useMyRewards(): Transaction[] {
+  const transactions = useUserTransactions()
+  return useMemo(
+    () =>
+      transactions
+        .filter((t) => t.type === 'redeem')
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+    [transactions],
+  )
+}
+
+export function useNotifications() {
+  const seenAt = useCurrentUser()?.notificationsSeenAt
+  const transactions = useUserTransactions()
+  const list = useMemo(() => notificationsFor(transactions, REWARDS), [transactions])
+  return { list, seenAt, unread: countUnread(list, seenAt) }
+}
+
+/** Stock ledger of the logged-in staff member's collection point, newest first. */
+export function usePointMoves(): StockMove[] {
+  return useStore(
+    useShallow((s) => {
+      const pointId = s.session ? s.users[s.session.userId]?.collectionPointId : undefined
+      return pointId ? s.stockMoves.filter((m) => m.pointId === pointId) : []
+    }),
+  )
+}
+
+export function usePointExpenses(): Expense[] {
+  return useStore(
+    useShallow((s) => {
+      const pointId = s.session ? s.users[s.session.userId]?.collectionPointId : undefined
+      return pointId ? s.expenses.filter((e) => e.pointId === pointId) : []
+    }),
+  )
+}
+
+export function useBusinessStats() {
+  const moves = usePointMoves()
+  return useMemo(() => businessStats(moves, new Date()), [moves])
 }

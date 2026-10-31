@@ -1,4 +1,4 @@
-import { ChartColumn, ClipboardList, HandCoins, Package, TrendingUp } from 'lucide-react'
+import { ChartColumn, ClipboardList, HandCoins, Package, TrendingDown, TrendingUp } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { Card } from '@/app/components/Card'
@@ -6,7 +6,7 @@ import { SectionTitle } from '@/app/components/SectionTitle'
 import { StatCard } from '@/app/components/StatCard'
 import { formatInt, formatKg, formatMillions } from '@/app/domain/format'
 import { Screen } from '@/app/layout/Screen'
-import { useCurrentUser } from '@/app/store/selectors'
+import { useBusinessStats } from '@/app/store/selectors'
 import common from '../common.module.css'
 import styles from './Business.module.css'
 
@@ -16,12 +16,12 @@ export const WAREHOUSE_TILES = [
   { label: 'Báo cáo', to: '/business/reports', Icon: ChartColumn },
 ] as const
 
-/** Screen 09 — GreenBusiness dashboard. */
+/** Screen 09 — GreenBusiness dashboard, computed from the collection point's stock ledger. */
 export function BusinessHomeScreen() {
   const navigate = useNavigate()
-  const stats = useCurrentUser()?.business
-
-  if (!stats) return null
+  const stats = useBusinessStats()
+  const growing = stats.monthOverMonthPct >= 0
+  const Trend = growing ? TrendingUp : TrendingDown
 
   return (
     <Screen>
@@ -34,12 +34,16 @@ export function BusinessHomeScreen() {
         <Card radius="lg" className={styles.totalCard}>
           <span className={styles.totalLabel}>Tổng khối lượng thu gom</span>
           <span className={styles.totalValue}>{formatKg(stats.totalWeightKg)}</span>
-          <TrendingUp size={40} strokeWidth={2} className={styles.trend} />
+          <Trend size={40} strokeWidth={2} className={styles.trend} />
           <span className={styles.delta}>
             <span className={styles.deltaDot}>
-              <TrendingUp size={10} strokeWidth={3} />
+              <Trend size={10} strokeWidth={3} />
             </span>
-            <b>+{stats.monthOverMonthPct}%</b> so với tháng trước
+            <b>
+              {growing ? '+' : ''}
+              {stats.monthOverMonthPct}%
+            </b>{' '}
+            so với tháng trước
           </span>
         </Card>
 

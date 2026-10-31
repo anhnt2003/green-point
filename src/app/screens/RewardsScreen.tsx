@@ -1,4 +1,6 @@
+import { Ticket } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/app/components/Button'
 import { FilterChips, type ChipOption } from '@/app/components/FilterChips'
 import { RewardThumb } from '@/app/components/illustrations/RewardThumb'
@@ -6,7 +8,7 @@ import { REWARDS } from '@/app/data/seed'
 import { formatInt, formatPoints } from '@/app/domain/format'
 import type { Reward, RewardCategory } from '@/app/domain/types'
 import { openDialog, toast } from '@/app/feedback/useFeedback'
-import { AppHeader } from '@/app/layout/AppHeader'
+import { AppHeader, HeaderAction } from '@/app/layout/AppHeader'
 import { Screen } from '@/app/layout/Screen'
 import { useCitizenStats } from '@/app/store/selectors'
 import { useStore } from '@/app/store/useStore'
@@ -24,6 +26,7 @@ const FILTERS: readonly ChipOption<Filter>[] = [
 
 /** Screen 06 — Đổi quà (GreenRewards). */
 export function RewardsScreen() {
+  const navigate = useNavigate()
   const [filter, setFilter] = useState<Filter>('all')
   const { pointBalance } = useCitizenStats()
   const redeem = useStore((s) => s.redeem)
@@ -49,12 +52,38 @@ export function RewardsScreen() {
     })
     if (choice !== 'confirm') return
     const res = redeem(reward)
-    if (res.ok) toast(`Đổi quà thành công! Còn ${formatPoints(pointBalance - reward.points)}`)
-    else toast('Không thể đổi quà. Vui lòng thử lại.', 'error')
+    if (!res.ok) {
+      toast('Không thể đổi quà. Vui lòng thử lại.', 'error')
+      return
+    }
+    const next = await openDialog({
+      title: 'Đổi quà thành công!',
+      message: `Còn ${formatPoints(pointBalance - reward.points)}. ${
+        reward.category === 'voucher' ? 'Mã voucher' : 'Mã nhận quà'
+      } đã được lưu trong Quà của tôi.`,
+      actions: [
+        { label: 'Để sau', value: 'later', role: 'cancel' },
+        { label: 'Xem mã', value: 'show', role: 'primary' },
+      ],
+    })
+    if (next === 'show') navigate(`/my-rewards/${res.transactionId}`)
   }
 
   return (
-    <Screen header={<AppHeader title="Đổi quà" align="left" backIcon="arrow" />}>
+    <Screen
+      header={
+        <AppHeader
+          title="Đổi quà"
+          align="left"
+          backIcon="arrow"
+          right={
+            <HeaderAction label="Quà của tôi" onClick={() => navigate('/my-rewards')}>
+              <Ticket size={22} strokeWidth={2} />
+            </HeaderAction>
+          }
+        />
+      }
+    >
       <div className={common.content}>
         <FilterChips options={FILTERS} value={filter} onChange={setFilter} ariaLabel="Lọc quà" />
         <ul className={styles.list}>

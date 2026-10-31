@@ -13,13 +13,13 @@ export const SCALE_MAX_KG = 500
  * Parses the weight a staff member reads off the scale. Accepts "2.4" or "2,4";
  * an empty field means 0 kg. Returns null for anything that is not a valid reading.
  */
-export function parseScaleWeight(text: string): number | null {
+export function parseScaleWeight(text: string, maxKg = SCALE_MAX_KG): number | null {
   const value = text.trim().replace(',', '.')
   if (value === '') return 0
   if (!/^\d+(\.\d+)?$/.test(value)) return null
   const kg = Math.round(Number(value) / SCALE_PRECISION) * SCALE_PRECISION
   const rounded = Math.round(kg * 10) / 10
-  return rounded > SCALE_MAX_KG ? null : rounded
+  return rounded > maxKg ? null : rounded
 }
 
 export function clampWeight(kg: number): number {

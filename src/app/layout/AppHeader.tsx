@@ -61,17 +61,30 @@ export function HeaderAction({ label, onClick, children }: { label: string; onCl
   )
 }
 
+interface HomeHeaderProps {
+  initials: string
+  onAvatar?(): void
+  onBell?(): void
+  /** Unread notifications: shows the red dot on the bell. */
+  unread?: number
+}
+
 /** Home variant: leaf logo + brand on the left, bell and avatar on the right. */
-export function HomeHeader({ initials, onAvatar }: { initials: string; onAvatar?: () => void }) {
+export function HomeHeader({ initials, onAvatar, onBell, unread = 0 }: HomeHeaderProps) {
   return (
     <header className={`${styles.header} ${styles.homeHeader}`}>
       <div className={styles.brand}>
         <Logo size={40} />
         <span className={styles.brandName}>GreenPoint</span>
       </div>
-      <button type="button" className={`${styles.iconButton} pressable`} aria-label="Thông báo">
+      <button
+        type="button"
+        className={`${styles.iconButton} pressable`}
+        onClick={onBell}
+        aria-label={unread > 0 ? `Thông báo, ${unread} chưa đọc` : 'Thông báo'}
+      >
         <Bell size={24} strokeWidth={1.9} />
-        <span className={styles.badgeDot} />
+        {unread > 0 && <span className={styles.badgeDot} />}
       </button>
       <button type="button" className={`${styles.avatar} pressable`} onClick={onAvatar} aria-label="Cá nhân">
         {initials}

@@ -210,26 +210,18 @@
   padding: 4px 4px 0;
 }
 
-/* ---------- Manage / placeholders / profile ---------- */
+.loanRow {
+  display: block;
+  width: 100%;
+  border-radius: var(--r-card);
+  text-align: left;
+}
+
+/* ---------- Manage / profile ---------- */
 .list {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.placeholderIcon {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: var(--c-primary-tint);
-  color: var(--c-primary);
-}
-
-.placeholderTitle {
-  font-size: var(--fs-heading);
-  color: var(--c-primary-dark);
 }
 
 .pointInfo {

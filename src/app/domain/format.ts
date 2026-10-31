@@ -22,11 +22,22 @@ export function formatPoints(points: number, signed = false): string {
   return `${sign}${formatInt(Math.abs(points))} điểm`
 }
 
+/** 150000 → "150.000 đ". */
+export function formatVnd(vnd: number): string {
+  return `${vnd < 0 ? '-' : ''}${formatInt(Math.abs(vnd))} đ`
+}
+
+/** Digits typed into a money field, ignoring thousands separators: "150.000" → 150000. Null if empty or not a number. */
+export function parseVnd(text: string): number | null {
+  const digits = text.replace(/[\s.,đ]/g, '')
+  return /^\d+$/.test(digits) ? Number(digits) : null
+}
+
 /** 8_500_000 → "8.5 triệu". */
 export function formatMillions(vnd: number): string {
-  const millions = Math.round((vnd / 1_000_000) * 10) / 10
+  const millions = Math.round((Math.abs(vnd) / 1_000_000) * 10) / 10
   const text = Number.isInteger(millions) ? String(millions) : millions.toFixed(1)
-  return `${text} triệu`
+  return `${vnd < 0 && millions > 0 ? '-' : ''}${text} triệu`
 }
 
 const pad = (n: number) => String(n).padStart(2, '0')
@@ -35,6 +46,12 @@ const pad = (n: number) => String(n).padStart(2, '0')
 export function formatDateTime(value: string | Date): string {
   const d = typeof value === 'string' ? new Date(value) : value
   return `${pad(d.getHours())}:${pad(d.getMinutes())} - ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`
+}
+
+/** "29/10". */
+export function formatDayMonth(value: string | Date): string {
+  const d = typeof value === 'string' ? new Date(value) : value
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}`
 }
 
 /** "30 m" under 100 m, "0.8 km" under 10 km (as in the mockup), "1.143 km" beyond. */

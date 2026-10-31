@@ -2,14 +2,20 @@
  * Pure state transitions. Every business rule lives here so it can be unit-tested
  * without React or localStorage. The zustand store only wires these to actions.
  */
-import { calcPoints, totalWeight } from '@/app/domain/points'
+import { activityReport, stockByType } from '@/app/domain/business'
+import { calcPoints, linePoints, totalWeight } from '@/app/domain/points'
+import { rewardCode } from '@/app/domain/rewards'
 import type {
   Account,
   DataState,
+  ExpenseCategory,
+  LoanApplication,
   LoanPurpose,
   Reward,
+  StockMove,
   Transaction,
   User,
+  WasteCode,
   WasteItem,
   WasteType,
 } from '@/app/domain/types'
@@ -83,7 +89,7 @@ function pendingFor(state: DataState, code: string, staffUserId: string): Transa
 /**
  * BR-04 + F-07: the staff weighs the waste and confirms. Points are computed from the
  * actual scale weights (BR-01); the citizen's estimate is kept for reference. Credits
- * the citizen once and adds the weight to the collection point's business stats.
+ * the citizen once and books the weight into the collection point's stock.
  */
 export function confirmRecycle(
   state: DataState,
@@ -99,23 +105,21 @@ export function confirmRecycle(
   const points = calcPoints(items, types)
   const weightByType = { ...citizen.weightByType }
   for (const item of items) weightByType[item.code] = round1(weightByType[item.code] + item.weightKg)
-  const addedKg = totalWeight(items)
 
   const users: Record<string, User> = {
     ...state.users,
     [citizen.id]: { ...citizen, pointBalance: citizen.pointBalance + points, weightByType },
   }
-  const operator = users[input.staffUserId]
-  if (operator.business) {
-    users[operator.id] = {
-      ...operator,
-      business: {
-        ...operator.business,
-        ordersToday: operator.business.ordersToday + 1,
-        totalWeightKg: round1(operator.business.totalWeightKg + addedKg),
-      },
-    }
-  }
+  const received: StockMove[] = items.map((item) => ({
+    id: `in-${tx.code}-${item.code}`,
+    pointId: tx.collectionPointId as string,
+    kind: 'in',
+    code: item.code,
+    kg: item.weightKg,
+    at: input.now,
+    orderId: tx.code,
+    points: linePoints(item, types),
+  }))
 
   const transaction: Transaction = {
     ...tx,
@@ -130,7 +134,12 @@ export function confirmRecycle(
   return {
     ok: true,
     transaction,
-    state: { ...state, users, transactions: state.transactions.map((t) => (t.id === tx.id ? transaction : t)) },
+    state: {
+      ...state,
+      users,
+      transactions: state.transactions.map((t) => (t.id === tx.id ? transaction : t)),
+      stockMoves: [...received, ...state.stockMoves],
+    },
   }
 }
 
@@ -168,6 +177,7 @@ export function redeemReward(
   const user = state.users[input.userId]
   if (!user) return fail('UNKNOWN_USER')
   if (user.pointBalance < input.reward.points) return fail('INSUFFICIENT_POINTS')
+  const seq = state.transactions.filter((t) => t.type === 'redeem').length + 1
   const transaction: Transaction = {
     id: `t-redeem-${state.transactions.length + 1}-${input.reward.id}`,
     userId: user.id,
@@ -175,6 +185,7 @@ export function redeemReward(
     status: 'confirmed',
     points: -input.reward.points,
     rewardId: input.reward.id,
+    rewardCode: rewardCode(input.reward, seq),
     createdAt: input.now,
     confirmedAt: input.now,
   }
@@ -189,17 +200,93 @@ export function redeemReward(
   }
 }
 
+/** The citizen marks a voucher as used or a gift as picked up. */
+export function markRewardUsed(
+  state: DataState,
+  input: { userId: string; transactionId: string; now: string },
+): Ok<object> | Fail<'NOT_FOUND' | 'ALREADY_USED'> {
+  const tx = state.transactions.find((t) => t.id === input.transactionId && t.type === 'redeem' && t.userId === input.userId)
+  if (!tx) return fail('NOT_FOUND')
+  if (tx.usedAt) return fail('ALREADY_USED')
+  return {
+    ok: true,
+    state: { ...state, transactions: state.transactions.map((t) => (t === tx ? { ...t, usedAt: input.now } : t)) },
+  }
+}
+
+export function markNotificationsSeen(state: DataState, input: { userId: string; now: string }): DataState {
+  const user = state.users[input.userId]
+  return user ? { ...state, users: { ...state.users, [user.id]: { ...user, notificationsSeenAt: input.now } } } : state
+}
+
+/** The ledger lines of the collection point this staff member operates. */
+const ledgerOf = (state: DataState, staffUserId: string) => {
+  const pointId = state.users[staffUserId]?.collectionPointId
+  return pointId
+    ? {
+        pointId,
+        moves: state.stockMoves.filter((m) => m.pointId === pointId),
+        expenses: state.expenses.filter((e) => e.pointId === pointId),
+      }
+    : null
+}
+
+/** Sells sorted waste from stock to a recycler: the revenue side of the collection point. */
+export function sellStock(
+  state: DataState,
+  input: { staffUserId: string; code: WasteCode; kg: number; priceVndPerKg: number; buyer: string; now: string },
+): Ok<object> | Fail<'NO_POINT' | 'INVALID' | 'NOT_ENOUGH_STOCK'> {
+  const ledger = ledgerOf(state, input.staffUserId)
+  if (!ledger) return fail('NO_POINT')
+  if (!(input.kg > 0) || !(input.priceVndPerKg > 0) || !input.buyer.trim()) return fail('INVALID')
+  if (input.kg > stockByType(ledger.moves)[input.code] + 1e-9) return fail('NOT_ENOUGH_STOCK')
+  const sale: StockMove = {
+    id: `out-${state.stockMoves.length + 1}`,
+    pointId: ledger.pointId,
+    kind: 'out',
+    code: input.code,
+    kg: round1(input.kg),
+    at: input.now,
+    buyer: input.buyer.trim(),
+    priceVndPerKg: Math.round(input.priceVndPerKg),
+  }
+  return { ok: true, state: { ...state, stockMoves: [sale, ...state.stockMoves] } }
+}
+
+/** F-12: an operating cost of the collection point. */
+export function addExpense(
+  state: DataState,
+  input: { staffUserId: string; category: ExpenseCategory; amountVnd: number; note: string; now: string },
+): Ok<object> | Fail<'NO_POINT' | 'INVALID'> {
+  const ledger = ledgerOf(state, input.staffUserId)
+  if (!ledger) return fail('NO_POINT')
+  if (!(input.amountVnd > 0)) return fail('INVALID')
+  const expense = {
+    id: `exp-${state.expenses.length + 1}`,
+    pointId: ledger.pointId,
+    category: input.category,
+    amountVnd: Math.round(input.amountVnd),
+    note: input.note.trim() || undefined,
+    at: input.now,
+  }
+  return { ok: true, state: { ...state, expenses: [expense, ...state.expenses] } }
+}
+
+/** GreenCapital: the application carries an activity report of the last 30 days (TL #6). */
 export function createLoanApplication(
   state: DataState,
   input: { userId: string; purposes: LoanPurpose[]; now: string },
-): Ok<object> | Fail<'NO_PURPOSE'> {
+): Ok<{ application: LoanApplication }> | Fail<'NO_PURPOSE' | 'NO_POINT'> {
   if (input.purposes.length === 0) return fail('NO_PURPOSE')
-  const application = {
+  const ledger = ledgerOf(state, input.userId)
+  if (!ledger) return fail('NO_POINT')
+  const application: LoanApplication = {
     id: `loan-${state.loanApplications.length + 1}`,
     userId: input.userId,
     purposes: [...input.purposes],
     createdAt: input.now,
-    status: 'submitted' as const,
+    status: 'submitted',
+    report: activityReport(ledger.moves, ledger.expenses, new Date(input.now)),
   }
-  return { ok: true, state: { ...state, loanApplications: [application, ...state.loanApplications] } }
+  return { ok: true, application, state: { ...state, loanApplications: [application, ...state.loanApplications] } }
 }

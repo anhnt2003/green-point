@@ -1,4 +1,3 @@
-import { ChartColumn, Package } from 'lucide-react'
 import { Navigate, Outlet, createMemoryRouter, useRouteError, type RouteObject } from 'react-router-dom'
 import type { Role } from '@/app/domain/types'
 import type { RouteHandle } from '@/app/layout/BottomNav'
@@ -10,11 +9,16 @@ import { GreenCapitalScreen } from '@/app/screens/business/GreenCapitalScreen'
 import { ManageScreen } from '@/app/screens/business/ManageScreen'
 import { ReceiveScreen } from '@/app/screens/business/ReceiveScreen'
 import { ScanScreen } from '@/app/screens/business/ScanScreen'
-import { PlaceholderScreen } from '@/app/screens/business/PlaceholderScreen'
+import { AddExpenseScreen, ExpensesScreen } from '@/app/screens/business/ExpensesScreen'
+import { InventoryScreen, SellStockScreen } from '@/app/screens/business/InventoryScreen'
+import { LoanScreen } from '@/app/screens/business/LoanScreen'
+import { ReportsScreen } from '@/app/screens/business/ReportsScreen'
 import { HistoryScreen } from '@/app/screens/HistoryScreen'
 import { HomeScreen } from '@/app/screens/HomeScreen'
 import { ImpactScreen } from '@/app/screens/ImpactScreen'
 import { LoginScreen } from '@/app/screens/LoginScreen'
+import { MyRewardScreen, MyRewardsScreen } from '@/app/screens/MyRewardsScreen'
+import { NotificationsScreen } from '@/app/screens/NotificationsScreen'
 import { ProfileScreen } from '@/app/screens/ProfileScreen'
 import { RecycleConfirmScreen } from '@/app/screens/RecycleConfirmScreen'
 import { RecycleSelectScreen } from '@/app/screens/RecycleSelectScreen'
@@ -77,6 +81,9 @@ export const routes: RouteObject[] = [
               { path: '/profile', element: <ProfileScreen />, handle: tab('profile') },
               // Sub-screens keep the tab highlighted as drawn in the mockup.
               { path: '/rewards', element: <RewardsScreen />, handle: tab('home') },
+              { path: '/my-rewards', element: <MyRewardsScreen />, handle: tab('home') },
+              { path: '/my-rewards/:id', element: <MyRewardScreen />, handle: tab('home') },
+              { path: '/notifications', element: <NotificationsScreen />, handle: tab('home') },
               { path: '/impact', element: <ImpactScreen />, handle: tab('profile') },
               // F-04 belongs to GreenMap.
               { path: '/guide', element: <SortingGuideScreen />, handle: tab('map') },
@@ -97,13 +104,18 @@ export const routes: RouteObject[] = [
               { path: 'manage', element: <ManageScreen />, handle: tab('manage') },
               { path: 'capital', element: <GreenCapitalScreen />, handle: tab('finance') },
               { path: 'profile', element: <BusinessProfileScreen />, handle: tab('profile') },
-              { path: 'inventory', element: <PlaceholderScreen title="Tồn kho" Icon={Package} />, handle: tab('manage') },
-              { path: 'reports', element: <PlaceholderScreen title="Báo cáo" Icon={ChartColumn} />, handle: tab('manage') },
+              { path: 'capital/:id', element: <LoanScreen />, handle: tab('finance') },
+              { path: 'inventory', element: <InventoryScreen />, handle: tab('manage') },
+              { path: 'reports', element: <ReportsScreen />, handle: tab('manage') },
+              { path: 'expenses', element: <ExpensesScreen />, handle: tab('manage') },
             ],
           },
           // Staff receiving flow (F-07): full-screen, no bottom navigation.
           { path: 'scan', element: <ScanScreen /> },
           { path: 'receive/:code', element: <ReceiveScreen /> },
+          // Forms: full-screen, no bottom navigation.
+          { path: 'inventory/sell', element: <SellStockScreen /> },
+          { path: 'expenses/new', element: <AddExpenseScreen /> },
         ],
       },
       { path: '*', element: <Navigate to="/" replace /> },

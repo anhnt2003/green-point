@@ -8,7 +8,7 @@ import { StatCard } from '@/app/components/StatCard'
 import { formatKgValue } from '@/app/domain/format'
 import { HomeHeader } from '@/app/layout/AppHeader'
 import { Screen } from '@/app/layout/Screen'
-import { useCitizenStats, useCurrentUser } from '@/app/store/selectors'
+import { useCitizenStats, useCurrentUser, useNotifications } from '@/app/store/selectors'
 import common from './common.module.css'
 import styles from './HomeScreen.module.css'
 
@@ -17,9 +17,19 @@ export function HomeScreen() {
   const navigate = useNavigate()
   const user = useCurrentUser()
   const stats = useCitizenStats()
+  const { unread } = useNotifications()
 
   return (
-    <Screen header={<HomeHeader initials={user?.avatarInitials ?? ''} onAvatar={() => navigate('/profile', { replace: true })} />}>
+    <Screen
+      header={
+        <HomeHeader
+          initials={user?.avatarInitials ?? ''}
+          onAvatar={() => navigate('/profile', { replace: true })}
+          onBell={() => navigate('/notifications')}
+          unread={unread}
+        />
+      }
+    >
       <div className={common.content}>
         <div className={styles.greeting}>
           <h2 className={styles.hello}>Xin chào, {user?.name}!</h2>

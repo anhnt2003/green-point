@@ -1,24 +1,27 @@
-import { CircleCheck } from 'lucide-react'
+import { CircleCheck, FileText } from 'lucide-react'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useShallow } from 'zustand/react/shallow'
 import { Button } from '@/app/components/Button'
 import { CapitalScene } from '@/app/components/illustrations/CapitalScene'
 import { Logo } from '@/app/components/illustrations/Logo'
+import { ListRow } from '@/app/components/ListRow'
 import { SectionTitle } from '@/app/components/SectionTitle'
 import { LOAN_PURPOSES } from '@/app/data/seed'
-import { formatInt, formatKg, formatMillions } from '@/app/domain/format'
+import { formatDateTime } from '@/app/domain/format'
 import type { LoanPurpose } from '@/app/domain/types'
 import { openDialog, toast } from '@/app/feedback/useFeedback'
 import { Screen } from '@/app/layout/Screen'
-import { useCurrentUser } from '@/app/store/selectors'
 import { useStore } from '@/app/store/useStore'
 import common from '../common.module.css'
 import styles from './Business.module.css'
 
 /** Screen 10 — GreenCapital: pick funding purposes and create a loan profile (BR-08). */
 export function GreenCapitalScreen() {
+  const navigate = useNavigate()
   const [selected, setSelected] = useState<LoanPurpose[]>([])
-  const stats = useCurrentUser()?.business
   const createLoanApplication = useStore((s) => s.createLoanApplication)
+  const applications = useStore(useShallow((s) => s.loanApplications.filter((l) => l.userId === s.session?.userId)))
 
   const toggle = (id: LoanPurpose) =>
     setSelected((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]))
@@ -31,13 +34,15 @@ export function GreenCapitalScreen() {
     }
     const purposes = LOAN_PURPOSES.filter((p) => selected.includes(p.id)).map((p) => p.label.toLowerCase())
     setSelected([])
-    await openDialog({
+    const next = await openDialog({
       title: 'Đã tạo hồ sơ vay vốn',
-      message: `Hồ sơ gồm nhu cầu: ${purposes.join(', ')}; kèm dữ liệu hoạt động ${
-        stats ? `${formatKg(stats.totalWeightKg)} thu gom, ${formatInt(stats.ordersToday)} đơn hôm nay, doanh thu ước tính ${formatMillions(stats.estimatedRevenueVnd)}` : ''
-      }. GreenPoint sẽ kết nối bạn với ngân hàng hoặc chương trình tài trợ phù hợp.`,
-      actions: [{ label: 'Đóng', value: 'ok', role: 'primary' }],
+      message: `Hồ sơ gồm nhu cầu: ${purposes.join(', ')}; kèm báo cáo hoạt động 30 ngày gần nhất của điểm thu gom. GreenPoint sẽ kết nối bạn với ngân hàng hoặc chương trình tài trợ phù hợp.`,
+      actions: [
+        { label: 'Đóng', value: 'close', role: 'cancel' },
+        { label: 'Xem hồ sơ', value: 'open', role: 'primary' },
+      ],
     })
+    if (next === 'open') navigate(`/business/capital/${res.id}`)
   }
 
   return (
@@ -89,6 +94,34 @@ export function GreenCapitalScreen() {
           GreenPoint chỉ hỗ trợ kết nối và cung cấp dữ liệu. Việc cấp tín dụng phụ thuộc vào quy định và thẩm định của
           ngân hàng, tổ chức tài chính.
         </p>
+
+        {applications.length > 0 && (
+          <>
+            <div className={styles.section}>
+              <SectionTitle>Hồ sơ đã tạo ({applications.length})</SectionTitle>
+            </div>
+            <div className={styles.list}>
+              {applications.map((l) => (
+                <button
+                  key={l.id}
+                  type="button"
+                  className={`${styles.loanRow} pressable`}
+                  onClick={() => navigate(`/business/capital/${l.id}`)}
+                >
+                  <ListRow
+                    icon={<FileText size={22} />}
+                    title={LOAN_PURPOSES.filter((p) => l.purposes.includes(p.id))
+                      .map((p) => p.label)
+                      .join(', ')}
+                    subtitle={formatDateTime(l.createdAt)}
+                    value="Chờ thẩm định"
+                    valueTone="muted"
+                  />
+                </button>
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </Screen>
   )

@@ -45,10 +45,14 @@ export interface Account {
   userId: string
 }
 
+/** GreenBusiness dashboard figures, derived from the stock ledger (see domain/business.ts). */
 export interface BusinessStats {
+  /** All-time weight received. */
   totalWeightKg: number
+  /** Weight received in the last 30 days vs the 30 days before. */
   monthOverMonthPct: number
   ordersToday: number
+  /** Last 30 days of received weight at the recyclers' prices. */
   estimatedRevenueVnd: number
 }
 
@@ -64,7 +68,8 @@ export interface User {
   weightByType: Record<WasteCode, number>
   /** Business only: the collection point this account operates. */
   collectionPointId?: string
-  business?: BusinessStats
+  /** Citizen only: notifications up to this time have been seen. */
+  notificationsSeenAt?: string
 }
 
 export type TransactionType = 'recycle' | 'redeem'
@@ -91,11 +96,27 @@ export interface Transaction {
   rejectReason?: string
   collectionPointId?: string
   rewardId?: string
+  /** Redeem: voucher code, or pickup code for a gift handed out at the collection point. */
+  rewardCode?: string
+  /** Redeem: when the voucher was used or the gift picked up. */
+  usedAt?: string
   createdAt: string
   confirmedAt?: string
 }
 
 export type LoanPurpose = 'vehicle' | 'equipment' | 'expansion' | 'technology'
+
+/** Activity report attached to a loan application, as of its creation (GreenCapital). */
+export interface ActivityReport {
+  periodDays: number
+  intakeKg: number
+  intakeByType: Record<WasteCode, number>
+  orders: number
+  salesVnd: number
+  expensesVnd: number
+  stockKg: number
+  monthOverMonthPct: number
+}
 
 export interface LoanApplication {
   id: string
@@ -103,6 +124,37 @@ export interface LoanApplication {
   purposes: LoanPurpose[]
   createdAt: string
   status: 'submitted'
+  report: ActivityReport
+}
+
+/** One line of a collection point's stock ledger. */
+export interface StockMove {
+  id: string
+  pointId: string
+  /** in = received from a citizen, out = sold to a recycler. */
+  kind: 'in' | 'out'
+  code: WasteCode
+  kg: number
+  at: string
+  /** in: groups the lines of one handover; the app transaction code when it came through the app. */
+  orderId?: string
+  /** in: points credited for this line. */
+  points?: number
+  /** out: buyer and agreed price. */
+  buyer?: string
+  priceVndPerKg?: number
+}
+
+/** Operating costs entered by the collection point. Points paid out are derived from the ledger. */
+export type ExpenseCategory = 'transport' | 'labor' | 'utilities' | 'other'
+
+export interface Expense {
+  id: string
+  pointId: string
+  category: ExpenseCategory
+  amountVnd: number
+  note?: string
+  at: string
 }
 
 export interface DataState {
@@ -110,6 +162,8 @@ export interface DataState {
   users: Record<string, User>
   transactions: Transaction[]
   loanApplications: LoanApplication[]
+  stockMoves: StockMove[]
+  expenses: Expense[]
   /** Next recycle code is `GP${CODE_BASE + codeSeq}`. */
   codeSeq: number
 }

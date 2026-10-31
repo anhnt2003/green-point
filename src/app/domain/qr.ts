@@ -11,3 +11,6 @@ export function parseTransactionCode(text: string): string | null {
   const match = /^(?:GREENPOINT:)?#?(GP\d{6,})$/i.exec(text.trim())
   return match ? match[1].toUpperCase() : null
 }
+
+/** QR on a redeemed reward, shown to the partner cashier or the collection-point staff. */
+export const rewardQrPayload = (code: string) => `${PREFIX}REWARD:${code}`
