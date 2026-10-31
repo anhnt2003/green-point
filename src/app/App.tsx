@@ -3,6 +3,7 @@ import { RouterProvider } from 'react-router-dom'
 import { isShellMessage, postToShell } from '@/shared/bridge'
 import { FeedbackHost } from '@/app/feedback/FeedbackHost'
 import { useFeedback } from '@/app/feedback/useFeedback'
+import { canGoBack } from '@/app/layout/history'
 import { PlatformProvider } from '@/app/platform/PlatformContext'
 import { useStore } from '@/app/store/useStore'
 import { createAppRouter, homeOf, type AppRouter } from './routing'
@@ -34,9 +35,15 @@ function useShellBridge(router: AppRouter) {
           store.reset()
           void router.navigate('/welcome', { replace: true })
           break
-        case 'back':
-          void router.navigate(-1)
+        case 'back': {
+          // Like the header's back button: with nothing to go back to, a tab goes to the home tab.
+          const role = currentRole()
+          if (canGoBack()) void router.navigate(-1)
+          else if (role && router.state.location.pathname !== homeOf(role)) {
+            void router.navigate(homeOf(role), { replace: true })
+          }
           break
+        }
       }
     }
 

@@ -1,8 +1,9 @@
 import { ArrowLeft, Bell, ChevronLeft } from 'lucide-react'
 import type { ReactNode } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Logo } from '@/app/components/illustrations/Logo'
 import { usePlatform } from '@/app/platform/PlatformContext'
+import { canGoBack } from './history'
 import styles from './layout.module.css'
 
 interface AppHeaderProps {
@@ -19,9 +20,7 @@ interface AppHeaderProps {
 
 export function useBack(fallback = '/') {
   const navigate = useNavigate()
-  const location = useLocation()
-  // MemoryRouter gives the first entry the key "default": nothing to pop.
-  return () => (location.key === 'default' ? navigate(fallback, { replace: true }) : navigate(-1))
+  return () => (canGoBack() ? navigate(-1) : navigate(fallback, { replace: true }))
 }
 
 export function AppHeader({

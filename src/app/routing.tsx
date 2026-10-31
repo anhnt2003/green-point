@@ -2,6 +2,7 @@ import { ChartColumn, Package } from 'lucide-react'
 import { Navigate, Outlet, createMemoryRouter, useRouteError, type RouteObject } from 'react-router-dom'
 import type { Role } from '@/app/domain/types'
 import type { RouteHandle } from '@/app/layout/BottomNav'
+import { trackHistory } from '@/app/layout/history'
 import { TabLayout } from '@/app/layout/TabLayout'
 import { BusinessHomeScreen } from '@/app/screens/business/BusinessHomeScreen'
 import { BusinessProfileScreen } from '@/app/screens/business/BusinessProfileScreen'
@@ -111,7 +112,9 @@ export const routes: RouteObject[] = [
 ]
 
 export function createAppRouter() {
-  return createMemoryRouter(routes, { initialEntries: ['/'] })
+  const router = createMemoryRouter(routes, { initialEntries: ['/'] })
+  trackHistory(router)
+  return router
 }
 
 export type AppRouter = ReturnType<typeof createAppRouter>
