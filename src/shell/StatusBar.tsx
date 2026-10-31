@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import type { Platform } from '@/shared/bridge'
 import styles from './shell.module.css'
 
@@ -41,11 +42,34 @@ function AndroidIcons() {
   )
 }
 
+/** The computer's time as "17:08", updated when the minute changes. */
+function useClock() {
+  const [now, setNow] = useState(() => new Date())
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout>
+    const tick = () => {
+      const current = new Date()
+      setNow(current)
+      clearTimeout(timer)
+      timer = setTimeout(tick, 60_000 - (current.getSeconds() * 1000 + current.getMilliseconds()))
+    }
+    tick()
+    // Background tabs throttle timers: catch up as soon as the simulator is visible again.
+    document.addEventListener('visibilitychange', tick)
+    return () => {
+      clearTimeout(timer)
+      document.removeEventListener('visibilitychange', tick)
+    }
+  }, [])
+  return `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`
+}
+
 /** Drawn by the shell over the app iframe; the app reserves --safe-top for it. */
 export function StatusBar({ platform }: { platform: Platform }) {
+  const time = useClock()
   return (
     <div className={`${styles.statusBar} ${platform === 'ios' ? styles.sbIos : styles.sbAndroid}`} aria-hidden="true">
-      <span className={styles.sbTime}>9:41</span>
+      <span className={styles.sbTime}>{time}</span>
       {platform === 'ios' ? <IosIcons /> : <AndroidIcons />}
     </div>
   )
